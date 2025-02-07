@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ncoisasdafono/config/hive_config.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  HiveConfig.start();
+
   runApp(const MyApp());
 }
 
