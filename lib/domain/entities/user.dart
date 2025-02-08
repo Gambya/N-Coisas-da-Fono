@@ -11,13 +11,20 @@ sealed class User with _$User {
     required String email,
   }) = _User;
 
+  const factory User.notLogged() = NotLoggedUser;
+
   const factory User.logged({
     required String id,
     required String name,
     required String email,
+    required String photoUrl,
     required String token,
     required String refreshToken,
   }) = LoggedUser;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+
+  static User empty() {
+    return User.notLogged();
+  }
 }
