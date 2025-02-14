@@ -47,7 +47,6 @@ class LocalConsultationRepository implements ConsultationRepository {
             .map((json) => Consultation.fromJson(jsonDecode(json)))
             .toList())
         .onSuccess((consultations) => _streamController.add);
-    ;
   }
 
   @override
