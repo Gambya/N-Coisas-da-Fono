@@ -7,6 +7,6 @@ abstract interface class PatientRepository {
   AsyncResult<Unit> deletePatient(String id);
   AsyncResult<List<Patient>> getPatients();
   AsyncResult<Patient> getPatient(String id);
-  Stream<Patient> patientObserver();
+  Stream<List<Patient>> patientObserver();
   void dispose();
 }

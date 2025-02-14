@@ -7,7 +7,7 @@ import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:result_dart/result_dart.dart';
 
 class LocalConsultationRepository implements ConsultationRepository {
-  final _streamController = StreamController<Consultation>.broadcast();
+  final _streamController = StreamController<List<Consultation>>.broadcast();
   final LocalConsultationStorage _storage;
 
   LocalConsultationRepository(this._storage);
@@ -16,12 +16,20 @@ class LocalConsultationRepository implements ConsultationRepository {
   AsyncResult<Consultation> createConsultation(Consultation consultation) {
     return _storage
         .saveData(consultation.id, jsonEncode(consultation.toJson())) //
-        .pure(consultation);
+        .onSuccess((_) async {
+      final result = await getConsultations();
+      result.onSuccess((consultations) => _streamController.add(consultations));
+    }).pure(consultation);
   }
 
   @override
   AsyncResult<Unit> deleteConsultation(String id) {
-    return _storage.deleteData(id);
+    return _storage
+        .deleteData(id) //
+        .onSuccess((_) async {
+      final result = await getConsultations();
+      result.onSuccess((consultations) => _streamController.add(consultations));
+    });
   }
 
   @override
@@ -37,18 +45,23 @@ class LocalConsultationRepository implements ConsultationRepository {
         .getAllData() //
         .map((jsonList) => jsonList
             .map((json) => Consultation.fromJson(jsonDecode(json)))
-            .toList());
+            .toList())
+        .onSuccess((consultations) => _streamController.add);
+    ;
   }
 
   @override
   AsyncResult<Consultation> updateConsultation(Consultation consultation) {
     return _storage
         .saveData(consultation.id, jsonEncode(consultation.toJson())) //
-        .pure(consultation);
+        .onSuccess((_) async {
+      final result = await getConsultations();
+      result.onSuccess((consultations) => _streamController.add(consultations));
+    }).pure(consultation);
   }
 
   @override
-  Stream<Consultation> consultationObserver() {
+  Stream<List<Consultation>> consultationObserver() {
     return _streamController.stream;
   }
 

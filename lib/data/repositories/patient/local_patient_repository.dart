@@ -7,7 +7,7 @@ import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:result_dart/result_dart.dart';
 
 class LocalPatientRepository implements PatientRepository {
-  final _streamController = StreamController<Patient>.broadcast();
+  final _streamController = StreamController<List<Patient>>.broadcast();
   final LocalPatientStorage _storage;
 
   LocalPatientRepository(this._storage);
@@ -16,12 +16,20 @@ class LocalPatientRepository implements PatientRepository {
   AsyncResult<Patient> createPatient(Patient patient) {
     return _storage
         .saveData(patient.id, jsonEncode(patient.toJson())) //
-        .pure(patient);
+        .onSuccess((_) async {
+      final result = await getPatients();
+      result.onSuccess((consultations) => _streamController.add(consultations));
+    }).pure(patient);
   }
 
   @override
   AsyncResult<Unit> deletePatient(String id) {
-    return _storage.deleteData(id);
+    return _storage
+        .deleteData(id) //
+        .onSuccess((_) async {
+      final result = await getPatients();
+      result.onSuccess((patients) => _streamController.add(patients));
+    });
   }
 
   @override
@@ -32,23 +40,26 @@ class LocalPatientRepository implements PatientRepository {
   }
 
   @override
-  AsyncResult<List<Patient>> getPatients() {
-    return _storage
+  AsyncResult<List<Patient>> getPatients() async {
+    return await _storage
         .getAllData() //
-        .map((jsonList) => jsonList
-            .map((json) => Patient.fromJson(jsonDecode(json)))
-            .toList());
+        .map((jsonList) =>
+            jsonList.map((json) => Patient.fromJson(jsonDecode(json))).toList())
+        .onSuccess((patients) => _streamController.add);
   }
 
   @override
   AsyncResult<Patient> updatePatient(Patient patient) {
     return _storage
         .saveData(patient.id, jsonEncode(patient.toJson())) //
-        .pure(patient);
+        .onSuccess((_) async {
+      final result = await getPatients();
+      result.onSuccess((patients) => _streamController.add(patients));
+    }).pure(patient);
   }
 
   @override
-  Stream<Patient> patientObserver() {
+  Stream<List<Patient>> patientObserver() {
     return _streamController.stream;
   }
 
