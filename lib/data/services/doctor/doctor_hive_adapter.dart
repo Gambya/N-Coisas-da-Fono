@@ -8,14 +8,14 @@ class DoctorHiveAdapter extends TypeAdapter<Doctor> {
   @override
   Doctor read(BinaryReader reader) {
     return Doctor(
-      id: reader.read(),
-      name: reader.read(),
-      email: reader.read(),
-      photoUrl: reader.read(),
-      phone: reader.read(),
-      crm: reader.read(),
-      specialty: reader.read(),
-      address: reader.read(),
+      id: reader.readString(),
+      name: reader.readString(),
+      email: reader.readString(),
+      photoUrl: reader.readString(),
+      phone: reader.readString(),
+      crfa: reader.readString(),
+      specialty: reader.readString(),
+      address: reader.readString(),
     );
   }
 
@@ -26,7 +26,7 @@ class DoctorHiveAdapter extends TypeAdapter<Doctor> {
     writer.write(obj.email);
     writer.write(obj.photoUrl);
     writer.write(obj.phone);
-    writer.write(obj.crm);
+    writer.write(obj.crfa);
     writer.write(obj.specialty);
     writer.write(obj.address);
   }

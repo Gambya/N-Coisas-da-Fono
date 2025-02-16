@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:ncoisasdafono/data/exceptions/exceptions.dart';
 import 'package:ncoisasdafono/data/services/patient/patient_hive_adapter.dart';
+import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:result_dart/result_dart.dart';
 
 class LocalPatientStorage {
@@ -19,7 +20,7 @@ class LocalPatientStorage {
     _box = await Hive.openLazyBox('patient');
   }
 
-  AsyncResult<String> saveData(String key, String value) async {
+  AsyncResult<Patient> saveData(String key, Patient value) async {
     try {
       await _box.put(key, value);
       return Success(value);

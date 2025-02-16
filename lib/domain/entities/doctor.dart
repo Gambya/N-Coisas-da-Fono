@@ -11,9 +11,9 @@ sealed class Doctor with _$Doctor {
     @HiveField(0) required String id,
     @HiveField(1) required String name,
     @HiveField(2) required String email,
-    @HiveField(3) required String photoUrl,
+    @HiveField(3) required String? photoUrl,
     @HiveField(4) required String phone,
-    @HiveField(5) required String crm,
+    @HiveField(5) required String crfa,
     @HiveField(6) required String specialty,
     @HiveField(7) required String address,
   }) = _Doctor;

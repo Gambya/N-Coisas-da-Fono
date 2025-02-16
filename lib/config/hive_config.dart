@@ -8,6 +8,5 @@ class HiveConfig {
     Directory dir = await getApplicationDocumentsDirectory();
 
     await Hive.initFlutter(dir.path);
-    // await Hive.openBox('settings');
   }
 }

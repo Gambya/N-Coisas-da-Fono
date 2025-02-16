@@ -20,7 +20,7 @@ class LocalConsultationStorage {
     _box = await Hive.openLazyBox<Consultation>('consultation');
   }
 
-  AsyncResult<String> saveData(String key, String value) async {
+  AsyncResult<Consultation> saveData(String key, Consultation value) async {
     try {
       await _box.put(key, value);
       return Success(value);

@@ -10,9 +10,9 @@ _$DoctorImpl _$$DoctorImplFromJson(Map<String, dynamic> json) => _$DoctorImpl(
       id: json['id'] as String,
       name: json['name'] as String,
       email: json['email'] as String,
-      photoUrl: json['photoUrl'] as String,
+      photoUrl: json['photoUrl'] as String?,
       phone: json['phone'] as String,
-      crm: json['crm'] as String,
+      crfa: json['crfa'] as String,
       specialty: json['specialty'] as String,
       address: json['address'] as String,
     );
@@ -24,7 +24,7 @@ Map<String, dynamic> _$$DoctorImplToJson(_$DoctorImpl instance) =>
       'email': instance.email,
       'photoUrl': instance.photoUrl,
       'phone': instance.phone,
-      'crm': instance.crm,
+      'crfa': instance.crfa,
       'specialty': instance.specialty,
       'address': instance.address,
     };
