@@ -1,5 +1,4 @@
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
-import 'package:uuid/uuid.dart';
 
 class DoctorDto {
   late String id;
@@ -12,6 +11,7 @@ class DoctorDto {
   String address;
 
   DoctorDto({
+    this.id = "",
     this.name = "",
     this.email = "",
     this.photoUrl,
@@ -19,9 +19,7 @@ class DoctorDto {
     this.crfa = "",
     this.specialty = "Fonoaudióloga",
     this.address = "",
-  }) {
-    id = Uuid().v4().toString();
-  }
+  });
 
   Doctor toEntity() {
     return Doctor(
