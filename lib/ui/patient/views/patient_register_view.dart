@@ -57,7 +57,7 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Text('Registrar Paciente'),
+              Text('Paciente'),
               const SizedBox(height: 40),
               GestureDetector(
                 onTap: () {},

@@ -57,7 +57,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Text('Registrar Fonoaudióloga'),
+              Text('Fonoaudiólogo(a)'),
               const SizedBox(height: 40),
               GestureDetector(
                 onTap: () {},
