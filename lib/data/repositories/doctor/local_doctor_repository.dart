@@ -15,7 +15,7 @@ class LocalDoctorRepository implements DoctorRepository {
   @override
   AsyncResult<Doctor> createDoctor(Doctor doctor) {
     return _storage
-        .saveData(doctor.id, doctor.toJson().toString()) //
+        .saveData(doctor.id, doctor) //
         .onSuccess((_) => _streamController.add(doctor))
         .pure(doctor);
   }
@@ -46,7 +46,7 @@ class LocalDoctorRepository implements DoctorRepository {
   @override
   AsyncResult<Doctor> updateDoctor(Doctor doctor) {
     return _storage
-        .saveData(doctor.id, doctor.toJson().toString()) //
+        .saveData(doctor.id, doctor) //
         .onSuccess((_) => _streamController.add(doctor))
         .pure(doctor);
   }

@@ -27,11 +27,11 @@ mixin _$Doctor {
   @HiveField(2)
   String get email => throw _privateConstructorUsedError;
   @HiveField(3)
-  String get photoUrl => throw _privateConstructorUsedError;
+  String? get photoUrl => throw _privateConstructorUsedError;
   @HiveField(4)
   String get phone => throw _privateConstructorUsedError;
   @HiveField(5)
-  String get crm => throw _privateConstructorUsedError;
+  String get crfa => throw _privateConstructorUsedError;
   @HiveField(6)
   String get specialty => throw _privateConstructorUsedError;
   @HiveField(7)
@@ -55,9 +55,9 @@ abstract class $DoctorCopyWith<$Res> {
       {@HiveField(0) String id,
       @HiveField(1) String name,
       @HiveField(2) String email,
-      @HiveField(3) String photoUrl,
+      @HiveField(3) String? photoUrl,
       @HiveField(4) String phone,
-      @HiveField(5) String crm,
+      @HiveField(5) String crfa,
       @HiveField(6) String specialty,
       @HiveField(7) String address});
 }
@@ -80,9 +80,9 @@ class _$DoctorCopyWithImpl<$Res, $Val extends Doctor>
     Object? id = null,
     Object? name = null,
     Object? email = null,
-    Object? photoUrl = null,
+    Object? photoUrl = freezed,
     Object? phone = null,
-    Object? crm = null,
+    Object? crfa = null,
     Object? specialty = null,
     Object? address = null,
   }) {
@@ -99,17 +99,17 @@ class _$DoctorCopyWithImpl<$Res, $Val extends Doctor>
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
-      photoUrl: null == photoUrl
+      photoUrl: freezed == photoUrl
           ? _value.photoUrl
           : photoUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       phone: null == phone
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
               as String,
-      crm: null == crm
-          ? _value.crm
-          : crm // ignore: cast_nullable_to_non_nullable
+      crfa: null == crfa
+          ? _value.crfa
+          : crfa // ignore: cast_nullable_to_non_nullable
               as String,
       specialty: null == specialty
           ? _value.specialty
@@ -134,9 +134,9 @@ abstract class _$$DoctorImplCopyWith<$Res> implements $DoctorCopyWith<$Res> {
       {@HiveField(0) String id,
       @HiveField(1) String name,
       @HiveField(2) String email,
-      @HiveField(3) String photoUrl,
+      @HiveField(3) String? photoUrl,
       @HiveField(4) String phone,
-      @HiveField(5) String crm,
+      @HiveField(5) String crfa,
       @HiveField(6) String specialty,
       @HiveField(7) String address});
 }
@@ -157,9 +157,9 @@ class __$$DoctorImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? email = null,
-    Object? photoUrl = null,
+    Object? photoUrl = freezed,
     Object? phone = null,
-    Object? crm = null,
+    Object? crfa = null,
     Object? specialty = null,
     Object? address = null,
   }) {
@@ -176,17 +176,17 @@ class __$$DoctorImplCopyWithImpl<$Res>
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
-      photoUrl: null == photoUrl
+      photoUrl: freezed == photoUrl
           ? _value.photoUrl
           : photoUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       phone: null == phone
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
               as String,
-      crm: null == crm
-          ? _value.crm
-          : crm // ignore: cast_nullable_to_non_nullable
+      crfa: null == crfa
+          ? _value.crfa
+          : crfa // ignore: cast_nullable_to_non_nullable
               as String,
       specialty: null == specialty
           ? _value.specialty
@@ -210,7 +210,7 @@ class _$DoctorImpl implements _Doctor {
       @HiveField(2) required this.email,
       @HiveField(3) required this.photoUrl,
       @HiveField(4) required this.phone,
-      @HiveField(5) required this.crm,
+      @HiveField(5) required this.crfa,
       @HiveField(6) required this.specialty,
       @HiveField(7) required this.address});
 
@@ -228,13 +228,13 @@ class _$DoctorImpl implements _Doctor {
   final String email;
   @override
   @HiveField(3)
-  final String photoUrl;
+  final String? photoUrl;
   @override
   @HiveField(4)
   final String phone;
   @override
   @HiveField(5)
-  final String crm;
+  final String crfa;
   @override
   @HiveField(6)
   final String specialty;
@@ -244,7 +244,7 @@ class _$DoctorImpl implements _Doctor {
 
   @override
   String toString() {
-    return 'Doctor(id: $id, name: $name, email: $email, photoUrl: $photoUrl, phone: $phone, crm: $crm, specialty: $specialty, address: $address)';
+    return 'Doctor(id: $id, name: $name, email: $email, photoUrl: $photoUrl, phone: $phone, crfa: $crfa, specialty: $specialty, address: $address)';
   }
 
   @override
@@ -258,7 +258,7 @@ class _$DoctorImpl implements _Doctor {
             (identical(other.photoUrl, photoUrl) ||
                 other.photoUrl == photoUrl) &&
             (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.crm, crm) || other.crm == crm) &&
+            (identical(other.crfa, crfa) || other.crfa == crfa) &&
             (identical(other.specialty, specialty) ||
                 other.specialty == specialty) &&
             (identical(other.address, address) || other.address == address));
@@ -267,7 +267,7 @@ class _$DoctorImpl implements _Doctor {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, name, email, photoUrl, phone, crm, specialty, address);
+      runtimeType, id, name, email, photoUrl, phone, crfa, specialty, address);
 
   /// Create a copy of Doctor
   /// with the given fields replaced by the non-null parameter values.
@@ -290,9 +290,9 @@ abstract class _Doctor implements Doctor {
       {@HiveField(0) required final String id,
       @HiveField(1) required final String name,
       @HiveField(2) required final String email,
-      @HiveField(3) required final String photoUrl,
+      @HiveField(3) required final String? photoUrl,
       @HiveField(4) required final String phone,
-      @HiveField(5) required final String crm,
+      @HiveField(5) required final String crfa,
       @HiveField(6) required final String specialty,
       @HiveField(7) required final String address}) = _$DoctorImpl;
 
@@ -309,13 +309,13 @@ abstract class _Doctor implements Doctor {
   String get email;
   @override
   @HiveField(3)
-  String get photoUrl;
+  String? get photoUrl;
   @override
   @HiveField(4)
   String get phone;
   @override
   @HiveField(5)
-  String get crm;
+  String get crfa;
   @override
   @HiveField(6)
   String get specialty;

@@ -15,7 +15,7 @@ class LocalConsultationRepository implements ConsultationRepository {
   @override
   AsyncResult<Consultation> createConsultation(Consultation consultation) {
     return _storage
-        .saveData(consultation.id, jsonEncode(consultation.toJson())) //
+        .saveData(consultation.id, consultation) //
         .onSuccess((_) async {
       final result = await getConsultations();
       result.onSuccess((consultations) => _streamController.add(consultations));
@@ -52,7 +52,7 @@ class LocalConsultationRepository implements ConsultationRepository {
   @override
   AsyncResult<Consultation> updateConsultation(Consultation consultation) {
     return _storage
-        .saveData(consultation.id, jsonEncode(consultation.toJson())) //
+        .saveData(consultation.id, consultation) //
         .onSuccess((_) async {
       final result = await getConsultations();
       result.onSuccess((consultations) => _streamController.add(consultations));

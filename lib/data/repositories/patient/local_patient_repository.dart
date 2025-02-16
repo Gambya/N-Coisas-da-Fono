@@ -15,7 +15,7 @@ class LocalPatientRepository implements PatientRepository {
   @override
   AsyncResult<Patient> createPatient(Patient patient) {
     return _storage
-        .saveData(patient.id, jsonEncode(patient.toJson())) //
+        .saveData(patient.id, patient) //
         .onSuccess((_) async {
       final result = await getPatients();
       result.onSuccess((consultations) => _streamController.add(consultations));
@@ -51,7 +51,7 @@ class LocalPatientRepository implements PatientRepository {
   @override
   AsyncResult<Patient> updatePatient(Patient patient) {
     return _storage
-        .saveData(patient.id, jsonEncode(patient.toJson())) //
+        .saveData(patient.id, patient) //
         .onSuccess((_) async {
       final result = await getPatients();
       result.onSuccess((patients) => _streamController.add(patients));
