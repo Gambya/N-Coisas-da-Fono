@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:ncoisasdafono/domain/dtos/doctor_dto.dart';
-import 'package:ncoisasdafono/domain/validators/doctor_validator.dart';
+import 'package:ncoisasdafono/domain/dtos/patient_dto.dart';
+import 'package:ncoisasdafono/domain/validators/patient_validator.dart';
 import 'package:ncoisasdafono/routing/routes.dart';
-import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_register_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
 import 'package:result_command/result_command.dart';
 
-class DoctorRegisterView extends StatefulWidget {
-  final DoctorRegisterViewModel viewModel;
+class PatientRegisterView extends StatefulWidget {
+  final PatientRegisterViewModel viewModel;
 
-  const DoctorRegisterView({super.key, required this.viewModel});
+  const PatientRegisterView({super.key, required this.viewModel});
 
   @override
-  State<DoctorRegisterView> createState() => _DoctorRegisterViewState();
+  State<PatientRegisterView> createState() => _PatientRegisterViewState();
 }
 
-class _DoctorRegisterViewState extends State<DoctorRegisterView> {
-  late DoctorRegisterViewModel _viewModel;
-  final DoctorValidator _validator = DoctorValidator();
-  final DoctorDto _doctor = DoctorDto();
+class _PatientRegisterViewState extends State<PatientRegisterView> {
+  late PatientRegisterViewModel _viewModel;
+  final PatientValidator _validator = PatientValidator();
+  final PatientDto _patient = PatientDto();
 
   @override
   void initState() {
     super.initState();
     _viewModel = widget.viewModel;
-    _viewModel.registerDoctorCommand
-        .addListener(_onRegisterDoctorCommandChanged);
+    _viewModel.registerPatientCommand
+        .addListener(_onRegisterPatientCommandChanged);
   }
 
-  void _onRegisterDoctorCommandChanged() {
-    if (_viewModel.registerDoctorCommand.isSuccess) {
+  void _onRegisterPatientCommandChanged() {
+    if (_viewModel.registerPatientCommand.isSuccess) {
       context.go(Routes.home);
       // Navigator.of(context).pop();
-    } else if (_viewModel.registerDoctorCommand.isFailure) {
-      final failure = _viewModel.registerDoctorCommand.value as FailureCommand;
+    } else if (_viewModel.registerPatientCommand.isFailure) {
+      final failure = _viewModel.registerPatientCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(failure.error.toString()),
       ));
@@ -43,8 +43,8 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
 
   @override
   void dispose() {
-    _viewModel.registerDoctorCommand
-        .removeListener(_onRegisterDoctorCommandChanged);
+    _viewModel.registerPatientCommand
+        .removeListener(_onRegisterPatientCommandChanged);
     super.dispose();
   }
 
@@ -57,7 +57,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Text('Fonoaudiólogo(a)'),
+              Text('Paciente'),
               const SizedBox(height: 40),
               GestureDetector(
                 onTap: () {},
@@ -74,10 +74,10 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  _doctor.name = value;
+                  _patient.name = value;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _validator.byField(_doctor, 'name'),
+                validator: _validator.byField(_patient, 'name'),
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   border: OutlineInputBorder(),
@@ -87,10 +87,10 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  _doctor.email = value;
+                  _patient.email = value;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _validator.byField(_doctor, 'email'),
+                validator: _validator.byField(_patient, 'email'),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'E-mail',
@@ -101,10 +101,10 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  _doctor.phone = value;
+                  _patient.phone = value;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _validator.byField(_doctor, 'phone'),
+                validator: _validator.byField(_patient, 'phone'),
                 inputFormatters: [
                   MaskTextInputFormatter(
                       mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')}),
@@ -119,17 +119,17 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  _doctor.crfa = value;
+                  _patient.cpf = value;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _validator.byField(_doctor, 'crfa'),
+                validator: _validator.byField(_patient, 'cpf'),
                 inputFormatters: [
                   MaskTextInputFormatter(
-                      mask: '#-####', filter: {"#": RegExp(r'[0-9]')}),
+                      mask: '###.###.###-##', filter: {"#": RegExp(r'[0-9]')}),
                 ],
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'CRFa',
+                  labelText: 'CPF',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
                 ),
@@ -137,26 +137,27 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  _doctor.address = value;
+                  _patient.rg = value;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _validator.byField(_doctor, 'address'),
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Endereço',
+                  labelText: 'RG',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
                 ),
               ),
               const SizedBox(height: 40),
               ListenableBuilder(
-                listenable: _viewModel.registerDoctorCommand,
+                listenable: _viewModel.registerPatientCommand,
                 builder: (context, _) {
                   return ElevatedButton(
-                    onPressed: _viewModel.registerDoctorCommand.isRunning
+                    onPressed: _viewModel.registerPatientCommand.isRunning
                         ? null
                         : () {
-                            if (_validator.validate(_doctor).isValid) {
-                              _viewModel.registerDoctorCommand.execute(_doctor);
+                            if (_validator.validate(_patient).isValid) {
+                              _viewModel.registerPatientCommand
+                                  .execute(_patient);
                             }
                           },
                     child: const Text('Salvar'),
