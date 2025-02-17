@@ -8,14 +8,15 @@ class ConsultationHiveAdapter extends TypeAdapter<Consultation> {
   @override
   Consultation read(BinaryReader reader) {
     return Consultation(
-      id: reader.read(),
-      title: reader.read(),
-      description: reader.read(),
+      id: reader.readString(),
+      title: reader.readString(),
+      description: reader.readString(),
       dateTime: reader.read(),
-      duration: reader.read(),
+      duration: reader.readInt(),
+      value: reader.read(),
       status: reader.read(),
-      patientId: reader.read(),
-      doctorId: reader.read(),
+      patientId: reader.readString(),
+      doctorId: reader.readString(),
     );
   }
 
@@ -26,6 +27,7 @@ class ConsultationHiveAdapter extends TypeAdapter<Consultation> {
     writer.write(obj.description);
     writer.write(obj.dateTime);
     writer.write(obj.duration);
+    writer.write(obj.value);
     writer.write(obj.status);
     writer.write(obj.patientId);
     writer.write(obj.doctorId);

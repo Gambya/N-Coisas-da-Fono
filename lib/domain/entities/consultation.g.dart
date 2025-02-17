@@ -12,8 +12,9 @@ _$ConsultationImpl _$$ConsultationImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       description: json['description'] as String,
       dateTime: DateTime.parse(json['dateTime'] as String),
-      duration: json['duration'] as String,
-      status: json['status'] as String,
+      duration: (json['duration'] as num).toInt(),
+      value: Decimal.fromJson(json['value'] as String),
+      status: $enumDecode(_$ConsultationStatusEnumMap, json['status']),
       patientId: json['patientId'] as String,
       doctorId: json['doctorId'] as String,
     );
@@ -25,7 +26,15 @@ Map<String, dynamic> _$$ConsultationImplToJson(_$ConsultationImpl instance) =>
       'description': instance.description,
       'dateTime': instance.dateTime.toIso8601String(),
       'duration': instance.duration,
-      'status': instance.status,
+      'value': instance.value,
+      'status': _$ConsultationStatusEnumMap[instance.status]!,
       'patientId': instance.patientId,
       'doctorId': instance.doctorId,
     };
+
+const _$ConsultationStatusEnumMap = {
+  ConsultationStatus.agendada: 'agendada',
+  ConsultationStatus.confirmada: 'confirmada',
+  ConsultationStatus.realizada: 'realizada',
+  ConsultationStatus.cancelada: 'cancelada',
+};

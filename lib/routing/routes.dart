@@ -5,4 +5,6 @@ abstract final class Routes {
   static const doctorDetail = '/doctor_detail';
   static const patientRegister = '/patient_register';
   static const patientUpdate = '/patient_update';
+  static const consultationRegister = '/consultation_register';
+  static const consultationUpdate = '/consultation_update';
 }

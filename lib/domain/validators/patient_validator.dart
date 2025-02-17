@@ -16,6 +16,6 @@ class PatientValidator extends LucidValidator<PatientDto> {
         .minLength(15, message: 'Telefone/celular inválido');
 
     ruleFor((patient) => patient.cpf, key: 'cpf')
-        .minLength(14, message: 'CPF inválido');
+        .validCPF(message: 'CPF inválido');
   }
 }

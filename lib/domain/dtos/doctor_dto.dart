@@ -1,7 +1,7 @@
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
 
 class DoctorDto {
-  late String id;
+  String id;
   String name;
   String email;
   String? photoUrl;

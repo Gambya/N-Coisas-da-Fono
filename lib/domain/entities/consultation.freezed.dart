@@ -28,10 +28,12 @@ mixin _$Consultation {
   String get description => throw _privateConstructorUsedError;
   @HiveField(3)
   DateTime get dateTime => throw _privateConstructorUsedError;
+  @HiveField(4)
+  int get duration => throw _privateConstructorUsedError;
   @HiveField(5)
-  String get duration => throw _privateConstructorUsedError;
+  Decimal get value => throw _privateConstructorUsedError;
   @HiveField(6)
-  String get status => throw _privateConstructorUsedError;
+  ConsultationStatus get status => throw _privateConstructorUsedError;
   @HiveField(7)
   String get patientId => throw _privateConstructorUsedError;
   @HiveField(8)
@@ -58,8 +60,9 @@ abstract class $ConsultationCopyWith<$Res> {
       @HiveField(1) String title,
       @HiveField(2) String description,
       @HiveField(3) DateTime dateTime,
-      @HiveField(5) String duration,
-      @HiveField(6) String status,
+      @HiveField(4) int duration,
+      @HiveField(5) Decimal value,
+      @HiveField(6) ConsultationStatus status,
       @HiveField(7) String patientId,
       @HiveField(8) String doctorId});
 }
@@ -84,6 +87,7 @@ class _$ConsultationCopyWithImpl<$Res, $Val extends Consultation>
     Object? description = null,
     Object? dateTime = null,
     Object? duration = null,
+    Object? value = null,
     Object? status = null,
     Object? patientId = null,
     Object? doctorId = null,
@@ -108,11 +112,15 @@ class _$ConsultationCopyWithImpl<$Res, $Val extends Consultation>
       duration: null == duration
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as Decimal,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as ConsultationStatus,
       patientId: null == patientId
           ? _value.patientId
           : patientId // ignore: cast_nullable_to_non_nullable
@@ -138,8 +146,9 @@ abstract class _$$ConsultationImplCopyWith<$Res>
       @HiveField(1) String title,
       @HiveField(2) String description,
       @HiveField(3) DateTime dateTime,
-      @HiveField(5) String duration,
-      @HiveField(6) String status,
+      @HiveField(4) int duration,
+      @HiveField(5) Decimal value,
+      @HiveField(6) ConsultationStatus status,
       @HiveField(7) String patientId,
       @HiveField(8) String doctorId});
 }
@@ -162,6 +171,7 @@ class __$$ConsultationImplCopyWithImpl<$Res>
     Object? description = null,
     Object? dateTime = null,
     Object? duration = null,
+    Object? value = null,
     Object? status = null,
     Object? patientId = null,
     Object? doctorId = null,
@@ -186,11 +196,15 @@ class __$$ConsultationImplCopyWithImpl<$Res>
       duration: null == duration
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as Decimal,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as ConsultationStatus,
       patientId: null == patientId
           ? _value.patientId
           : patientId // ignore: cast_nullable_to_non_nullable
@@ -212,7 +226,8 @@ class _$ConsultationImpl implements _Consultation {
       @HiveField(1) required this.title,
       @HiveField(2) required this.description,
       @HiveField(3) required this.dateTime,
-      @HiveField(5) required this.duration,
+      @HiveField(4) required this.duration,
+      @HiveField(5) required this.value,
       @HiveField(6) required this.status,
       @HiveField(7) required this.patientId,
       @HiveField(8) required this.doctorId});
@@ -233,11 +248,14 @@ class _$ConsultationImpl implements _Consultation {
   @HiveField(3)
   final DateTime dateTime;
   @override
+  @HiveField(4)
+  final int duration;
+  @override
   @HiveField(5)
-  final String duration;
+  final Decimal value;
   @override
   @HiveField(6)
-  final String status;
+  final ConsultationStatus status;
   @override
   @HiveField(7)
   final String patientId;
@@ -247,7 +265,7 @@ class _$ConsultationImpl implements _Consultation {
 
   @override
   String toString() {
-    return 'Consultation(id: $id, title: $title, description: $description, dateTime: $dateTime, duration: $duration, status: $status, patientId: $patientId, doctorId: $doctorId)';
+    return 'Consultation(id: $id, title: $title, description: $description, dateTime: $dateTime, duration: $duration, value: $value, status: $status, patientId: $patientId, doctorId: $doctorId)';
   }
 
   @override
@@ -263,6 +281,7 @@ class _$ConsultationImpl implements _Consultation {
                 other.dateTime == dateTime) &&
             (identical(other.duration, duration) ||
                 other.duration == duration) &&
+            (identical(other.value, value) || other.value == value) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.patientId, patientId) ||
                 other.patientId == patientId) &&
@@ -273,7 +292,7 @@ class _$ConsultationImpl implements _Consultation {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, title, description, dateTime,
-      duration, status, patientId, doctorId);
+      duration, value, status, patientId, doctorId);
 
   /// Create a copy of Consultation
   /// with the given fields replaced by the non-null parameter values.
@@ -297,8 +316,9 @@ abstract class _Consultation implements Consultation {
       @HiveField(1) required final String title,
       @HiveField(2) required final String description,
       @HiveField(3) required final DateTime dateTime,
-      @HiveField(5) required final String duration,
-      @HiveField(6) required final String status,
+      @HiveField(4) required final int duration,
+      @HiveField(5) required final Decimal value,
+      @HiveField(6) required final ConsultationStatus status,
       @HiveField(7) required final String patientId,
       @HiveField(8) required final String doctorId}) = _$ConsultationImpl;
 
@@ -318,11 +338,14 @@ abstract class _Consultation implements Consultation {
   @HiveField(3)
   DateTime get dateTime;
   @override
+  @HiveField(4)
+  int get duration;
+  @override
   @HiveField(5)
-  String get duration;
+  Decimal get value;
   @override
   @HiveField(6)
-  String get status;
+  ConsultationStatus get status;
   @override
   @HiveField(7)
   String get patientId;
