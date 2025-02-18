@@ -27,14 +27,13 @@ class ConsultationDto {
 
   Consultation toEntity() {
     int? durationValue = int.tryParse(duration);
-    Decimal? decimalValue = Decimal.tryParse(value);
     return Consultation(
       id: id ??= 0,
       title: title,
       description: description,
       dateTime: dateTime,
       duration: durationValue!,
-      value: decimalValue!.toString(),
+      value: value,
       status: status.toString(),
       patientId: patientId!,
       doctorId: doctorId!,

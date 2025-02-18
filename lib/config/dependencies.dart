@@ -57,6 +57,7 @@ List<SingleChildWidget> get providers {
       create: (context) => ConsultationRegisterViewModel(
         context.read<ConsultationRepository>(),
         context.read<PatientRepository>(),
+        context.read<DoctorRepository>(),
       ),
     ),
   ];

@@ -39,7 +39,7 @@ class LocalPatientRepository implements PatientRepository {
   AsyncResult<List<Patient>> getPatients() async {
     return await _storage
         .getAllData()
-        .onSuccess((patients) => _streamController.add);
+        .onSuccess((patients) => _streamController.add(patients));
   }
 
   @override
@@ -48,7 +48,7 @@ class LocalPatientRepository implements PatientRepository {
         .saveData(patient) //
         .onSuccess((_) async {
       final result = await getPatients();
-      result.onSuccess((patients) => _streamController.add(patients));
+      result.onSuccess((patients) => _streamController.add);
     }).pure(patient);
   }
 

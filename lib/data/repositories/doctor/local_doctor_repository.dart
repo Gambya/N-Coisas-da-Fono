@@ -34,10 +34,10 @@ class LocalDoctorRepository implements DoctorRepository {
   }
 
   @override
-  AsyncResult<Doctor> getDoctor(int id) {
+  AsyncResult<Doctor> getDoctor() {
     return _storage
-        .getData(id) //
-        .onSuccess((doctor) => _streamController.add);
+        .getData()
+        .onSuccess((doctor) => _streamController.add(doctor));
   }
 
   @override

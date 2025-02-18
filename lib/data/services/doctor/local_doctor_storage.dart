@@ -24,12 +24,12 @@ class LocalDoctorStorage {
     }
   }
 
-  AsyncResult<Doctor> getData(int id) async {
+  AsyncResult<Doctor> getData() async {
     try {
       final box = await getBox();
-      final doctor = await box.getAsync(id);
+      final doctor = await box.getAllAsync();
       return doctor != null
-          ? Success(doctor)
+          ? Success(doctor.firstOrNull)
           : Failure(LocalStorageException('Data not found'));
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));

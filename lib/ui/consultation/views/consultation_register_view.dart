@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
+import 'package:ncoisasdafono/routing/routes.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
+import 'package:result_command/result_command.dart';
 
 class ConsultationRegisterView extends StatefulWidget {
   final ConsultationRegisterViewModel viewModel;
@@ -37,9 +40,25 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
         DateFormat('dd/MM/yyyy').format(_consultation.dateTime);
 
     _viewModel.loadPatients();
+    _loadDoctor();
   }
 
-  void _onRegisterConsultationCommandChanged() {}
+  void _loadDoctor() async {
+    _consultation.doctorId = await _viewModel.loadDoctor();
+  }
+
+  void _onRegisterConsultationCommandChanged() {
+    if (_viewModel.registerConsultationCommand.isSuccess) {
+      context.go(Routes.home);
+      // Navigator.of(context).pop();
+    } else if (_viewModel.registerConsultationCommand.isFailure) {
+      final failure =
+          _viewModel.registerConsultationCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(failure.error.toString()),
+      ));
+    }
+  }
 
   @override
   void dispose() {
@@ -81,6 +100,8 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: _validator.byField(_consultation, 'description'),
+                minLines: 3,
+                maxLines: 3,
                 decoration: InputDecoration(
                   labelText: 'Descrição',
                   border: OutlineInputBorder(),
@@ -215,37 +236,58 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
               ),
               const SizedBox(height: 20),
               StreamBuilder<List<Patient>>(
-                stream: _viewModel.patientsStream, // Stream da ViewModel
+                stream: _viewModel.patientsStream,
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(); // Ou outro indicador de carregamento
+                  } else if (snapshot.hasError) {
                     return Text('Erro: ${snapshot.error}');
+                  } else if (snapshot.hasData) {
+                    return DropdownButtonFormField<Patient>(
+                      decoration: InputDecoration(
+                        labelText: 'Paciente',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (Patient? newValue) {
+                        setState(() {
+                          _selectedPatient = newValue;
+                          _consultation.patientId = newValue!.id;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'É necessário selecionar um paciente';
+                        }
+                        return null;
+                      },
+                      items: snapshot.data!
+                          .map<DropdownMenuItem<Patient>>((Patient patient) {
+                        return DropdownMenuItem<Patient>(
+                          value: patient,
+                          child: Text(patient.name),
+                        );
+                      }).toList(),
+                    );
+                  } else {
+                    return const Text(
+                        "No data available"); // Lidar com o caso em que não há dados
                   }
-
-                  return DropdownButtonFormField<Patient>(
-                    decoration: InputDecoration(
-                      labelText: 'Paciente',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (Patient? newValue) {
-                      setState(() {
-                        _selectedPatient = newValue;
-                        _consultation.patientId = newValue!.id;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'É necessário selecionar um paciente';
-                      }
-                      return null;
-                    },
-                    items: snapshot.data
-                            ?.map<DropdownMenuItem<Patient>>((Patient patient) {
-                          return DropdownMenuItem<Patient>(
-                            value: patient,
-                            child: Text(patient.name),
-                          );
-                        }).toList() ??
-                        [], // Use ?? [] para evitar erro de null
+                },
+              ),
+              const SizedBox(height: 40),
+              ListenableBuilder(
+                listenable: _viewModel.registerConsultationCommand,
+                builder: (context, _) {
+                  return ElevatedButton(
+                    onPressed: _viewModel.registerConsultationCommand.isRunning
+                        ? null
+                        : () {
+                            if (_validator.validate(_consultation).isValid) {
+                              _viewModel.registerConsultationCommand
+                                  .execute(_consultation);
+                            }
+                          },
+                    child: const Text('Salvar'),
                   );
                 },
               ),

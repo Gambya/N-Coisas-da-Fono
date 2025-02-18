@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ncoisasdafono/config/dependencies.dart';
-import 'package:ncoisasdafono/config/object_box.dart';
 import 'package:ncoisasdafono/routing/router.dart';
 import 'package:ncoisasdafono/ui/themes/themes.dart';
 import 'package:provider/provider.dart';

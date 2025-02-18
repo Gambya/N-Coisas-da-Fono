@@ -5,7 +5,7 @@ abstract interface class DoctorRepository {
   AsyncResult<Doctor> createDoctor(Doctor doctor);
   AsyncResult<Doctor> updateDoctor(Doctor doctor);
   AsyncResult<Unit> deleteDoctor(int id);
-  AsyncResult<Doctor> getDoctor(int id);
+  AsyncResult<Doctor> getDoctor();
   Stream<Doctor> doctorObserver();
   void dispose();
 }
