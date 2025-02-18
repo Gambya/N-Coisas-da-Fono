@@ -19,7 +19,7 @@ class PatientDto {
 
   Patient toEntity() {
     return Patient(
-      id: id!,
+      id: id ??= 0,
       name: name,
       email: email,
       phone: phone,

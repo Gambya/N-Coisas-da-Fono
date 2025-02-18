@@ -23,7 +23,7 @@ class DoctorDto {
 
   Doctor toEntity() {
     return Doctor(
-      id: id!,
+      id: id ??= 0,
       name: name,
       email: email,
       photoUrl: photoUrl,

@@ -29,7 +29,7 @@ class ConsultationDto {
     int? durationValue = int.tryParse(duration);
     Decimal? decimalValue = Decimal.tryParse(value);
     return Consultation(
-      id: id!,
+      id: id ??= 0,
       title: title,
       description: description,
       dateTime: dateTime,

@@ -7,7 +7,7 @@ import 'package:ncoisasdafono/ui/patient/views/patient_register_view.dart';
 import 'package:provider/provider.dart';
 
 GoRouter router() => GoRouter(
-      initialLocation: Routes.consultationRegister,
+      initialLocation: Routes.patientRegister,
       debugLogDiagnostics: true,
       routes: [
         GoRoute(
