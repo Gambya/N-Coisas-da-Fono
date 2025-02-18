@@ -1,9 +1,9 @@
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
+import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 
@@ -23,6 +23,8 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
 
   final TextEditingController _dateController = TextEditingController();
   ConsultationStatus _statusSelecionado = ConsultationStatus.agendada;
+  late List<Patient> _patients = [];
+  Patient? _selectedPatient;
 
   @override
   void initState() {
@@ -33,6 +35,8 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
 
     _dateController.text =
         DateFormat('dd/MM/yyyy').format(_consultation.dateTime);
+
+    _viewModel.loadPatients();
   }
 
   void _onRegisterConsultationCommandChanged() {}
@@ -65,6 +69,9 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                   labelText: 'Título',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -78,6 +85,9 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                   labelText: 'Descrição',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -137,7 +147,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  _consultation.duration = int.parse(value);
+                  _consultation.duration = value;
                 },
                 keyboardType: TextInputType.number,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -146,15 +156,15 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                   labelText: 'Duração da Consulta (minutos)',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
-                  Decimal? decimalValue = Decimal.tryParse(value);
-                  if (decimalValue != null) {
-                    _consultation.value = decimalValue;
-                  }
+                  _consultation.value = value;
                 },
                 keyboardType: TextInputType.number,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -167,6 +177,9 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                   labelText: 'Valor da consulta',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -199,6 +212,42 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                     );
                   }).toList(),
                 ),
+              ),
+              const SizedBox(height: 20),
+              StreamBuilder<List<Patient>>(
+                stream: _viewModel.patientsStream, // Stream da ViewModel
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Erro: ${snapshot.error}');
+                  }
+
+                  return DropdownButtonFormField<Patient>(
+                    decoration: InputDecoration(
+                      labelText: 'Paciente',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (Patient? newValue) {
+                      setState(() {
+                        _selectedPatient = newValue;
+                        _consultation.patientId = newValue!.id;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'É necessário selecionar um paciente';
+                      }
+                      return null;
+                    },
+                    items: snapshot.data
+                            ?.map<DropdownMenuItem<Patient>>((Patient patient) {
+                          return DropdownMenuItem<Patient>(
+                            value: patient,
+                            child: Text(patient.name),
+                          );
+                        }).toList() ??
+                        [], // Use ?? [] para evitar erro de null
+                  );
+                },
               ),
             ],
           ),

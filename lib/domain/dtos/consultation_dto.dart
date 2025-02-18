@@ -2,39 +2,42 @@ import 'package:decimal/decimal.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 
 class ConsultationDto {
-  late String id;
+  int? id;
   String title;
   String description;
   late DateTime dateTime;
-  int duration;
-  late Decimal value;
+  String duration;
+  String value;
   ConsultationStatus status;
-  String patientId;
-  String doctorId;
+  int? patientId;
+  int? doctorId;
 
   ConsultationDto({
+    this.id,
     this.title = "",
     this.description = "",
-    this.duration = 0,
+    this.duration = "",
+    this.value = "",
     this.status = ConsultationStatus.agendada,
-    this.patientId = "",
-    this.doctorId = "",
+    this.patientId,
+    this.doctorId,
   }) {
     dateTime = DateTime.now();
-    value = Decimal.parse('0.0');
   }
 
   Consultation toEntity() {
+    int? durationValue = int.tryParse(duration);
+    Decimal? decimalValue = Decimal.tryParse(value);
     return Consultation(
-      id: id,
+      id: id!,
       title: title,
       description: description,
       dateTime: dateTime,
-      duration: duration,
-      value: value,
-      status: status,
-      patientId: patientId,
-      doctorId: doctorId,
+      duration: durationValue!,
+      value: decimalValue!.toString(),
+      status: status.toString(),
+      patientId: patientId!,
+      doctorId: doctorId!,
     );
   }
 }

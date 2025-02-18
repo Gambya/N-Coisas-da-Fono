@@ -1,4 +1,4 @@
-import 'package:ncoisasdafono/config/app_settings.dart';
+import 'package:ncoisasdafono/config/object_box_database.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/consultation_repository.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/local_consultation_repository.dart';
 import 'package:ncoisasdafono/data/repositories/doctor/doctor_repository.dart';
@@ -16,11 +16,22 @@ import 'package:provider/provider.dart';
 
 List<SingleChildWidget> get providers {
   return [
-    ChangeNotifierProvider(create: (_) => AppSettings()),
-    Provider<LocalDoctorStorage>(create: (_) => LocalDoctorStorage()),
-    Provider<LocalPatientStorage>(create: (_) => LocalPatientStorage()),
+    Provider<ObjectBoxDatabase>(create: (_) => ObjectBoxDatabase()),
+    Provider<LocalDoctorStorage>(
+      create: (context) => LocalDoctorStorage(
+        context.read(),
+      ),
+    ),
+    Provider<LocalPatientStorage>(
+      create: (context) => LocalPatientStorage(
+        context.read(),
+      ),
+    ),
     Provider<LocalConsultationStorage>(
-        create: (_) => LocalConsultationStorage()),
+      create: (context) => LocalConsultationStorage(
+        context.read(),
+      ),
+    ),
     Provider<DoctorRepository>(
       create: (context) =>
           LocalDoctorRepository(context.read<LocalDoctorStorage>()),
@@ -38,19 +49,15 @@ List<SingleChildWidget> get providers {
           DoctorRegisterViewModel(context.read<DoctorRepository>()),
     ),
     ChangeNotifierProvider(
-        create: (context) =>
-            PatientRegisterViewModel(context.read<PatientRepository>())),
-    ChangeNotifierProvider(
-      create: (context) =>
-          ConsultationRegisterViewModel(context.read<ConsultationRepository>()),
+      create: (context) => PatientRegisterViewModel(
+        context.read<PatientRepository>(),
+      ),
     ),
     ChangeNotifierProvider(
-      create: (context) =>
-          DoctorRegisterViewModel(context.read<DoctorRepository>()),
-    ),
-    ChangeNotifierProvider(
-      create: (context) =>
-          PatientRegisterViewModel(context.read<PatientRepository>()),
+      create: (context) => ConsultationRegisterViewModel(
+        context.read<ConsultationRepository>(),
+        context.read<PatientRepository>(),
+      ),
     ),
   ];
 }

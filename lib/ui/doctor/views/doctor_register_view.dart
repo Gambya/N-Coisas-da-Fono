@@ -38,6 +38,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(failure.error.toString()),
       ));
+      print(failure.error.toString());
     }
   }
 
@@ -96,6 +97,9 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
                   labelText: 'E-mail',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -114,6 +118,9 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
                   labelText: 'Celular/Telefone',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -132,6 +139,9 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
                   labelText: 'CRFa',
                   border: OutlineInputBorder(),
                   errorStyle: TextStyle(color: Colors.red),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),

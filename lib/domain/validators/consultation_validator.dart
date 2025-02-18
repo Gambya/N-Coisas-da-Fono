@@ -4,18 +4,22 @@ import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 class ConsultationValidator extends LucidValidator<ConsultationDto> {
   ConsultationValidator() {
     ruleFor((consultation) => consultation.title, key: 'title')
-        .notEmpty(message: "É necessário o preenchimento do '{PropertyName}'")
-        .minLength(3,
-            message: "'{PropertyName}' deve ter no mínimo 3 caracteres");
+        .notEmpty(message: "É necessário o preenchimento do título")
+        .minLength(3, message: "O título deve ter no mínimo 3 caracteres");
 
     ruleFor((consultation) => consultation.dateTime, key: 'dateTime')
         .greaterThanOrEqualTo(DateTime.now(),
-            message: "'{PropertieName}' não pode ser anterior a data atual");
+            message: "Data de consulta não pode ser anterior a data atual");
 
     ruleFor((consultation) => consultation.duration, key: 'duration')
-        .min(0, message: "'{PropertieName}' não pode ser menor que 0");
+        .notEmpty()
+        .mustHaveNumber(message: "A duração deve ser um número em minutos");
 
-    ruleFor((consultation) => consultation.patientId, key: 'patient')
-        .notEmpty(message: "'{PropertieName}' tem que ser selecionado");
+    ruleFor((consultation) => consultation.value, key: 'value')
+        .notEmpty()
+        .mustHaveNumber(message: "O valor deve ser um número");
+
+    // ruleFor((consultation) => consultation.patientId, key: 'patient')
+    //     .notEmpty(message: "Paciente tem que ser selecionado");
   }
 }
