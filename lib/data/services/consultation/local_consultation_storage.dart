@@ -1,65 +1,56 @@
-import 'package:hive/hive.dart';
+import 'package:ncoisasdafono/config/object_box_database.dart';
 import 'package:ncoisasdafono/data/exceptions/exceptions.dart';
-import 'package:ncoisasdafono/data/services/consultation/consultation_hive_adapter.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
+import 'package:objectbox/objectbox.dart';
 import 'package:result_dart/result_dart.dart';
 
 class LocalConsultationStorage {
-  late LazyBox _box;
+  late final ObjectBoxDatabase _db;
 
-  LocalConsultationStorage() {
-    _startStorage();
+  LocalConsultationStorage(this._db);
+
+  Future<Box> getBox() async {
+    final store = await _db.getStore();
+    return store.box<Consultation>();
   }
 
-  _startStorage() async {
-    await _openBox();
-  }
-
-  _openBox() async {
-    Hive.registerAdapter(ConsultationHiveAdapter());
-    _box = await Hive.openLazyBox<Consultation>('consultation');
-  }
-
-  AsyncResult<Consultation> saveData(String key, Consultation value) async {
+  AsyncResult<Consultation> saveData(Consultation consultation) async {
     try {
-      await _box.put(key, value);
-      return Success(value);
+      final box = await getBox();
+      await box.putAsync(consultation);
+      return Success(consultation);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));
     }
   }
 
-  AsyncResult<String> getData(String key) async {
+  AsyncResult<Consultation> getData(int id) async {
     try {
-      final data = await _box.get(key);
-      return data != null
-          ? Success(data)
+      final box = await getBox();
+      final consultation = await box.getAsync(id);
+      return consultation != null
+          ? Success(consultation)
           : Failure(LocalStorageException('Data not found'));
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));
     }
   }
 
-  AsyncResult<List<String>> getAllData() async {
+  AsyncResult<List<Consultation>> getAllData() async {
     try {
-      final keys = _box.keys.toList();
-      List<String> allData = [];
+      final box = await getBox();
+      final allData = await box.getAllAsync() as List<Consultation>;
 
-      for (var key in keys) {
-        final data = await _box.get(key);
-        if (data != null) {
-          allData.add(data);
-        }
-      }
       return Success(allData);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));
     }
   }
 
-  AsyncResult<Unit> deleteData(String key) async {
+  AsyncResult<Unit> deleteData(int id) async {
     try {
-      await _box.delete(key);
+      final box = await getBox();
+      await box.removeAsync(id);
       return Success(unit);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));

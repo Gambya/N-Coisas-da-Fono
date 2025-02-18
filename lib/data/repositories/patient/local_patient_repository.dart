@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:ncoisasdafono/data/repositories/patient/patient_repository.dart';
 import 'package:ncoisasdafono/data/services/patient/local_patient_storage.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
@@ -15,7 +13,7 @@ class LocalPatientRepository implements PatientRepository {
   @override
   AsyncResult<Patient> createPatient(Patient patient) {
     return _storage
-        .saveData(patient.id, patient) //
+        .saveData(patient) //
         .onSuccess((_) async {
       final result = await getPatients();
       result.onSuccess((consultations) => _streamController.add(consultations));
@@ -23,7 +21,7 @@ class LocalPatientRepository implements PatientRepository {
   }
 
   @override
-  AsyncResult<Unit> deletePatient(String id) {
+  AsyncResult<Unit> deletePatient(int id) {
     return _storage
         .deleteData(id) //
         .onSuccess((_) async {
@@ -33,28 +31,24 @@ class LocalPatientRepository implements PatientRepository {
   }
 
   @override
-  AsyncResult<Patient> getPatient(String id) {
-    return _storage
-        .getData(id) //
-        .map((json) => Patient.fromJson(jsonDecode(json)));
+  AsyncResult<Patient> getPatient(int id) {
+    return _storage.getData(id);
   }
 
   @override
   AsyncResult<List<Patient>> getPatients() async {
     return await _storage
-        .getAllData() //
-        .map((jsonList) =>
-            jsonList.map((json) => Patient.fromJson(jsonDecode(json))).toList())
-        .onSuccess((patients) => _streamController.add);
+        .getAllData()
+        .onSuccess((patients) => _streamController.add(patients));
   }
 
   @override
   AsyncResult<Patient> updatePatient(Patient patient) {
     return _storage
-        .saveData(patient.id, patient) //
+        .saveData(patient) //
         .onSuccess((_) async {
       final result = await getPatients();
-      result.onSuccess((patients) => _streamController.add(patients));
+      result.onSuccess((patients) => _streamController.add);
     }).pure(patient);
   }
 

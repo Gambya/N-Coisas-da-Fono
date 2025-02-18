@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:ncoisasdafono/data/repositories/doctor/doctor_repository.dart';
 import 'package:ncoisasdafono/data/services/doctor/local_doctor_storage.dart';
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
@@ -15,13 +13,13 @@ class LocalDoctorRepository implements DoctorRepository {
   @override
   AsyncResult<Doctor> createDoctor(Doctor doctor) {
     return _storage
-        .saveData(doctor.id, doctor) //
-        .onSuccess((_) => _streamController.add(doctor))
+        .saveData(doctor) //
+        .onSuccess((doctor) => _streamController.add)
         .pure(doctor);
   }
 
   @override
-  AsyncResult<Unit> deleteDoctor(String id) {
+  AsyncResult<Unit> deleteDoctor(int id) {
     return _storage.deleteData(id);
   }
 
@@ -36,18 +34,17 @@ class LocalDoctorRepository implements DoctorRepository {
   }
 
   @override
-  AsyncResult<Doctor> getDoctor(String id) {
+  AsyncResult<Doctor> getDoctor() {
     return _storage
-        .getData(id) //
-        .map((json) => Doctor.fromJson(jsonDecode(json)))
+        .getData()
         .onSuccess((doctor) => _streamController.add(doctor));
   }
 
   @override
   AsyncResult<Doctor> updateDoctor(Doctor doctor) {
     return _storage
-        .saveData(doctor.id, doctor) //
-        .onSuccess((_) => _streamController.add(doctor))
+        .saveData(doctor) //
+        .onSuccess((doctor) => _streamController.add)
         .pure(doctor);
   }
 }

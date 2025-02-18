@@ -4,7 +4,6 @@ import 'package:ncoisasdafono/domain/dtos/doctor_dto.dart';
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
-import 'package:uuid/uuid.dart';
 
 class DoctorRegisterViewModel extends ChangeNotifier {
   final DoctorRepository _doctorRepository;
@@ -14,7 +13,6 @@ class DoctorRegisterViewModel extends ChangeNotifier {
   late final registerDoctorCommand = Command1(_registerDoctor);
 
   AsyncResult<Doctor> _registerDoctor(DoctorDto doctor) {
-    doctor.id = doctor.id == "" ? Uuid().v4() : doctor.id;
     return _doctorRepository.createDoctor(doctor.toEntity());
   }
 }

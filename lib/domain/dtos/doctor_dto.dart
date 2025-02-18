@@ -1,7 +1,7 @@
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
 
 class DoctorDto {
-  late String id;
+  int? id;
   String name;
   String email;
   String? photoUrl;
@@ -11,7 +11,7 @@ class DoctorDto {
   String address;
 
   DoctorDto({
-    this.id = "",
+    this.id,
     this.name = "",
     this.email = "",
     this.photoUrl,
@@ -23,7 +23,7 @@ class DoctorDto {
 
   Doctor toEntity() {
     return Doctor(
-      id: id,
+      id: id ??= 0,
       name: name,
       email: email,
       photoUrl: photoUrl,

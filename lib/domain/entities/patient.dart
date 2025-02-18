@@ -1,21 +1,20 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'patient.freezed.dart';
-part 'patient.g.dart';
+@Entity()
+class Patient {
+  int id;
+  String name;
+  String email;
+  String phone;
+  String? cpf;
+  String? rg;
 
-@freezed
-sealed class Patient with _$Patient {
-  @HiveType(typeId: 0)
-  const factory Patient({
-    @HiveField(0) required String id,
-    @HiveField(1) required String name,
-    @HiveField(2) required String email,
-    @HiveField(3) required String phone,
-    @HiveField(4) String? cpf,
-    @HiveField(5) String? rg,
-  }) = _Patient;
-
-  factory Patient.fromJson(Map<String, dynamic> json) =>
-      _$PatientFromJson(json);
+  Patient({
+    this.id = 0,
+    required this.name,
+    required this.email,
+    required this.phone,
+    this.cpf,
+    this.rg,
+  });
 }

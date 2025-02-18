@@ -1,23 +1,29 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'consultation.freezed.dart';
-part 'consultation.g.dart';
+@Entity()
+class Consultation {
+  int id;
+  String title;
+  String description;
+  @Property(type: PropertyType.date)
+  late DateTime dateTime;
+  int duration;
+  String value;
+  String status;
+  int patientId;
+  int? doctorId;
 
-@freezed
-sealed class Consultation with _$Consultation {
-  @HiveType(typeId: 0)
-  const factory Consultation({
-    @HiveField(0) required String id,
-    @HiveField(1) required String title,
-    @HiveField(2) required String description,
-    @HiveField(3) required DateTime dateTime,
-    @HiveField(5) required String duration,
-    @HiveField(6) required String status,
-    @HiveField(7) required String patientId,
-    @HiveField(8) required String doctorId,
-  }) = _Consultation;
-
-  factory Consultation.fromJson(Map<String, dynamic> json) =>
-      _$ConsultationFromJson(json);
+  Consultation({
+    this.id = 0,
+    required this.title,
+    required this.description,
+    required this.dateTime,
+    required this.duration,
+    required this.value,
+    required this.status,
+    required this.patientId,
+    required this.doctorId,
+  });
 }
+
+enum ConsultationStatus { agendada, confirmada, realizada, cancelada }
