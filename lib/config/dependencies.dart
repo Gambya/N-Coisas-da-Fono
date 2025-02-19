@@ -10,6 +10,8 @@ import 'package:ncoisasdafono/data/services/doctor/local_doctor_storage.dart';
 import 'package:ncoisasdafono/data/services/patient/local_patient_storage.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_register_view_model.dart';
+import 'package:ncoisasdafono/ui/home/viewmodels/consultation_view_model.dart';
+import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:provider/provider.dart';
@@ -60,5 +62,16 @@ List<SingleChildWidget> get providers {
         context.read<DoctorRepository>(),
       ),
     ),
+    ChangeNotifierProvider(
+      create: (context) => HomeViewModel(
+        context.read<ConsultationRepository>(),
+        context.read<DoctorRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => ConsultationViewModel(
+        context.read<ConsultationRepository>(),
+      ),
+    )
   ];
 }

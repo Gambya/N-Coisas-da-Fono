@@ -7,12 +7,14 @@ import 'package:ncoisasdafono/ui/patient/views/patient_register_view.dart';
 import 'package:provider/provider.dart';
 
 GoRouter router() => GoRouter(
-      initialLocation: Routes.consultationRegister,
+      initialLocation: Routes.home,
       debugLogDiagnostics: true,
       routes: [
         GoRoute(
           path: Routes.home,
-          builder: (context, state) => HomeView(),
+          builder: (context, state) => HomeView(
+            viewModel: context.read(),
+          ),
         ),
         GoRoute(
           path: Routes.doctorRegister,

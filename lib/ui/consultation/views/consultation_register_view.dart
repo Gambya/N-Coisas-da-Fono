@@ -8,6 +8,7 @@ import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
 import 'package:ncoisasdafono/routing/routes.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:result_command/result_command.dart';
 
 class ConsultationRegisterView extends StatefulWidget {
@@ -26,8 +27,6 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
 
   final TextEditingController _dateController = TextEditingController();
   ConsultationStatus _statusSelecionado = ConsultationStatus.agendada;
-  late List<Patient> _patients = [];
-  Patient? _selectedPatient;
 
   @override
   void initState() {
@@ -37,7 +36,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
         .addListener(_onRegisterConsultationCommandChanged);
 
     _dateController.text =
-        DateFormat('dd/MM/yyyy').format(_consultation.dateTime);
+        DateFormat('dd/MM/yyyy hh:mm').format(_consultation.dateTime);
 
     _viewModel.loadPatients();
     _loadDoctor();
@@ -70,14 +69,23 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Consulta'),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.transparent,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Text('Consulta'),
-              const SizedBox(height: 40),
               TextFormField(
                 onChanged: (value) {
                   _consultation.title = value;
@@ -115,24 +123,19 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
               Row(
                 children: [
                   Expanded(
-                    // Use Expanded para o TextFormField ocupar o espaço disponível
                     child: TextFormField(
-                      controller: _dateController, // Use o controlador aqui
-                      readOnly: true, // Impede a edição direta no TextFormField
+                      controller: _dateController,
+                      readOnly: true,
                       onTap: () async {
-                        // Abre o DatePicker ao tocar no TextFormField
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2101),
-                        );
+                        DateTime? pickedDate =
+                            await showOmniDateTimePicker(context: context);
 
                         if (pickedDate != null) {
                           setState(() {
                             _consultation.dateTime = pickedDate;
-                            _dateController.text = DateFormat('dd/MM/yyyy')
-                                .format(pickedDate); // Atualiza o TextFormField
+                            _dateController.text =
+                                DateFormat('dd/MM/yyyy hh:mm')
+                                    .format(pickedDate);
                           });
                         }
                       },
@@ -144,24 +147,22 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                     ),
                   ),
                   IconButton(
-                    // Um ícone de calendário para facilitar a interação
                     onPressed: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                      );
+                      DateTime? pickedDate =
+                          await showOmniDateTimePicker(context: context);
 
                       if (pickedDate != null) {
                         setState(() {
                           _consultation.dateTime = pickedDate;
-                          _dateController.text = DateFormat('dd/MM/yyyy')
-                              .format(pickedDate); // Atualiza o TextFormField
+                          _dateController.text =
+                              DateFormat('dd/MM/yyyy hh:mm').format(pickedDate);
                         });
                       }
                     },
-                    icon: const Icon(Icons.calendar_today),
+                    icon: const Icon(
+                      Icons.calendar_today,
+                      color: Color.fromARGB(255, 193, 214, 255),
+                    ),
                   ),
                 ],
               ),
@@ -250,7 +251,6 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                       ),
                       onChanged: (Patient? newValue) {
                         setState(() {
-                          _selectedPatient = newValue;
                           _consultation.patientId = newValue!.id;
                         });
                       },
@@ -279,6 +279,19 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                 listenable: _viewModel.registerConsultationCommand,
                 builder: (context, _) {
                   return ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        Color.fromARGB(255, 193, 214, 255),
+                      ),
+                      foregroundColor: WidgetStateProperty.all<Color>(
+                        Colors.white,
+                      ),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
                     onPressed: _viewModel.registerConsultationCommand.isRunning
                         ? null
                         : () {

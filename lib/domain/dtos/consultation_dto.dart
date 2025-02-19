@@ -1,4 +1,3 @@
-import 'package:decimal/decimal.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 
 class ConsultationDto {

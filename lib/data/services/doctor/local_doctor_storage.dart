@@ -28,9 +28,7 @@ class LocalDoctorStorage {
     try {
       final box = await getBox();
       final doctor = await box.getAllAsync();
-      return doctor != null
-          ? Success(doctor.firstOrNull)
-          : Failure(LocalStorageException('Data not found'));
+      return Success(doctor.firstOrNull);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));
     }

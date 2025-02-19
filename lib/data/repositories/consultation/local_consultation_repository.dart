@@ -39,7 +39,7 @@ class LocalConsultationRepository implements ConsultationRepository {
   AsyncResult<List<Consultation>> getConsultations() {
     return _storage
         .getAllData() //
-        .onSuccess((consultations) => _streamController.add);
+        .onSuccess((consultations) => _streamController.add(consultations));
   }
 
   @override
