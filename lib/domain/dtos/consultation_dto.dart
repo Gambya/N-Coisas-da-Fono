@@ -33,7 +33,7 @@ class ConsultationDto {
       dateTime: dateTime,
       duration: durationValue!,
       value: value,
-      status: status.toString(),
+      status: status.name,
       patientId: patientId!,
       doctorId: doctorId!,
     );

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
-import 'package:ncoisasdafono/routing/routes.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:result_command/result_command.dart';
@@ -48,8 +46,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
 
   void _onRegisterConsultationCommandChanged() {
     if (_viewModel.registerConsultationCommand.isSuccess) {
-      context.go(Routes.home);
-      // Navigator.of(context).pop();
+      Navigator.of(context).pop();
     } else if (_viewModel.registerConsultationCommand.isFailure) {
       final failure =
           _viewModel.registerConsultationCommand.value as FailureCommand;
@@ -264,7 +261,13 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                           .map<DropdownMenuItem<Patient>>((Patient patient) {
                         return DropdownMenuItem<Patient>(
                           value: patient,
-                          child: Text(patient.name),
+                          child: SizedBox(
+                            width: 200,
+                            child: Text(
+                              patient.name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         );
                       }).toList(),
                     );

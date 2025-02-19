@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
 import 'package:ncoisasdafono/ui/home/widgets/consultation_view.dart';
 import 'package:ncoisasdafono/ui/home/widgets/doctor_view.dart';
@@ -28,12 +29,6 @@ class _HomeViewState extends State<HomeView> {
     DoctorView(),
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,18 +48,30 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
         ),
-        title: Text("NCoisas da Fono"),
+        title: Text(
+          "NCoisas da Fono",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
         backgroundColor: Color.fromARGB(
             255, 215, 186, 232), // Color.fromARGB(255, 193, 214, 255),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
             onPressed: () {
               // Ação a ser executada ao clicar no ícone de menu
             },
           ),
           IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: Icon(
+              Icons.more_vert,
+              color: Colors.white,
+            ),
             onPressed: () {
               // Ação a ser executada ao clicar no ícone de menu
             },
@@ -72,27 +79,54 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       body: Center(
-        child: _widgetOptions[_selectedIndex],
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Color.fromARGB(255, 215, 186, 232),
-        unselectedItemColor: Color.fromARGB(100, 215, 186, 232),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_hospital), // Ícone para consultas
-            label: 'Consultas',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 20,
+              color: Colors.black.withOpacity(.1),
+            )
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            child: GNav(
+              rippleColor: Colors.grey[300]!,
+              hoverColor: Color.fromARGB(255, 215, 186, 232),
+              gap: 8,
+              activeColor: Color.fromARGB(255, 215, 186, 232),
+              iconSize: 24,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: Duration(milliseconds: 400),
+              tabBackgroundColor: Colors.grey[100]!,
+              color: Color.fromARGB(255, 215, 186, 232),
+              tabs: [
+                GButton(
+                  icon: Icons.local_hospital,
+                  text: 'Consultas',
+                ),
+                GButton(
+                  icon: Icons.accessible,
+                  text: 'Pacientes',
+                ),
+                GButton(
+                  icon: Icons.medical_information,
+                  text: 'Profile',
+                ),
+              ],
+              selectedIndex: _selectedIndex,
+              onTabChange: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.accessible), // Ícone para pacientes
-            label: 'Pacientes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.medical_information), // Ícone para perfil
-            label: 'Perfil',
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ncoisasdafono/domain/entities/consultation.dart';
+import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/views/consultation_register_view.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/consultation_view_model.dart';
@@ -47,7 +47,7 @@ class _ConsultationViewState extends State<ConsultationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<List<Consultation>>(
+      body: StreamBuilder<List<ConsultationWithDoctorAndPatientDto>>(
         stream: _viewModel.consultationStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -70,26 +70,26 @@ class _ConsultationViewState extends State<ConsultationView> {
               itemBuilder: (context, index) {
                 final consultation = snapshot.data![index];
                 return ConsultationCard(
-                  patientName:
-                      'Fulano', //consultation.patientId.name, // Acesse os dados do paciente
-                  photoUrl:
-                      "", //consultation.patient.photoUrl, // Se houver URL da foto
+                  patientName: consultation.patient.name,
+                  photoUrl: consultation.patient.photoUrl,
                   consultationDate: consultation.dateTime,
                   consultationTime:
                       TimeOfDay.fromDateTime(consultation.dateTime),
-                  consultationDuration: consultation.duration,
+                  consultationDuration: int.tryParse(consultation.duration)!,
                 );
               },
             );
           } else {
             return const Center(
-              child: Text('Nenhum dado disponível.'),
+              child: Text('Nenhuma consulta disponível para esta data.'),
             );
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromARGB(255, 193, 214, 255),
+        mini: true,
+        shape: CircleBorder(),
         onPressed: () {
           Navigator.push(
             context,

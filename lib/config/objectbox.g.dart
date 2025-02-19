@@ -127,7 +127,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
       id: const obx_int.IdUid(3, 5894913375927753702),
       name: 'Patient',
-      lastPropertyId: const obx_int.IdUid(6, 8333948979212999197),
+      lastPropertyId: const obx_int.IdUid(7, 7084805928520916682),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
@@ -158,6 +158,11 @@ final _entities = <obx_int.ModelEntity>[
         obx_int.ModelProperty(
             id: const obx_int.IdUid(6, 8333948979212999197),
             name: 'rg',
+            type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(7, 7084805928520916682),
+            name: 'photoUrl',
             type: 9,
             flags: 0)
       ],
@@ -351,13 +356,17 @@ obx_int.ModelDefinition getObjectBoxModel() {
               object.cpf == null ? null : fbb.writeString(object.cpf!);
           final rgOffset =
               object.rg == null ? null : fbb.writeString(object.rg!);
-          fbb.startTable(7);
+          final photoUrlOffset = object.photoUrl == null
+              ? null
+              : fbb.writeString(object.photoUrl!);
+          fbb.startTable(8);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, nameOffset);
           fbb.addOffset(2, emailOffset);
           fbb.addOffset(3, phoneOffset);
           fbb.addOffset(4, cpfOffset);
           fbb.addOffset(5, rgOffset);
+          fbb.addOffset(6, photoUrlOffset);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -372,6 +381,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
               .vTableGet(buffer, rootOffset, 8, '');
           final phoneParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 10, '');
+          final photoUrlParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 16);
           final cpfParam = const fb.StringReader(asciiOptimization: true)
               .vTableGetNullable(buffer, rootOffset, 12);
           final rgParam = const fb.StringReader(asciiOptimization: true)
@@ -381,6 +392,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
               name: nameParam,
               email: emailParam,
               phone: phoneParam,
+              photoUrl: photoUrlParam,
               cpf: cpfParam,
               rg: rgParam);
 
@@ -490,4 +502,8 @@ class Patient_ {
   /// See [Patient.rg].
   static final rg =
       obx.QueryStringProperty<Patient>(_entities[2].properties[5]);
+
+  /// See [Patient.photoUrl].
+  static final photoUrl =
+      obx.QueryStringProperty<Patient>(_entities[2].properties[6]);
 }

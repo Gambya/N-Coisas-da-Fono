@@ -6,6 +6,7 @@ class Patient {
   String name;
   String email;
   String phone;
+  String? photoUrl;
   String? cpf;
   String? rg;
 
@@ -14,6 +15,7 @@ class Patient {
     required this.name,
     required this.email,
     required this.phone,
+    this.photoUrl,
     this.cpf,
     this.rg,
   });
