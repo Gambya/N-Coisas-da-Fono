@@ -23,4 +23,19 @@ class ConsultationWithDoctorAndPatientDto {
   }) {
     dateTime = DateTime.now();
   }
+
+  Consultation toConsultation() {
+    final durationTemp = int.tryParse(duration);
+    return Consultation(
+      id: id!,
+      title: title,
+      description: description,
+      dateTime: dateTime,
+      duration: durationTemp ?? 0,
+      value: value,
+      status: status.name,
+      patientId: patient.id,
+      doctorId: doctor.id,
+    );
+  }
 }

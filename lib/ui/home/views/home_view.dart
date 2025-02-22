@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
-import 'package:ncoisasdafono/ui/home/widgets/consultation_view.dart';
+import 'package:ncoisasdafono/ui/consultation/views/consultation_view.dart';
 import 'package:ncoisasdafono/ui/home/widgets/doctor_view.dart';
 import 'package:ncoisasdafono/ui/home/widgets/patient_view.dart';
 

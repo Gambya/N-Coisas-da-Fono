@@ -22,8 +22,7 @@ class ConsultationCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0.5),
       child: Card(
-        color: Color.fromARGB(
-            255, 215, 186, 232), //Color.fromARGB(255, 193, 214, 255),
+        color: Color.fromARGB(255, 215, 186, 232),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -31,7 +30,6 @@ class ConsultationCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Foto do paciente ou iniciais
                   if (photoUrl != null && photoUrl!.isNotEmpty)
                     CircleAvatar(
                       backgroundImage: NetworkImage(photoUrl!),

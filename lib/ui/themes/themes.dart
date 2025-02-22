@@ -59,6 +59,10 @@ abstract final class AppTheme {
     colorScheme: AppColors.lightColorScheme,
     textTheme: _textTheme,
     inputDecorationTheme: _inputDecorationTheme,
+    bottomSheetTheme: BottomSheetThemeData(
+      dragHandleColor: Color.fromARGB(255, 215, 186, 232),
+      showDragHandle: true,
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -67,5 +71,9 @@ abstract final class AppTheme {
     colorScheme: AppColors.darkColorScheme,
     textTheme: _textTheme,
     inputDecorationTheme: _inputDecorationTheme,
+    bottomSheetTheme: BottomSheetThemeData(
+      dragHandleColor: Color.fromARGB(255, 215, 186, 232),
+      showDragHandle: true,
+    ),
   );
 }
