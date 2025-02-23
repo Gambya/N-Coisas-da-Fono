@@ -16,6 +16,7 @@ import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_register_view_model.da
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_view_model.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/viewmodels/patient_view_model.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -93,6 +94,11 @@ List<SingleChildWidget> get providers {
       create: (context) => DropDownButtomFromFieldPatientsViewModel(
         context.read<PatientRepository>(),
       ),
-    )
+    ),
+    ChangeNotifierProvider(
+      create: (context) => PatientViewModel(
+        context.read<PatientRepository>(),
+      ),
+    ),
   ];
 }

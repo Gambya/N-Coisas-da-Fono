@@ -24,6 +24,16 @@ class Consultation {
     required this.patientId,
     required this.doctorId,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Consultation &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 enum ConsultationStatus { agendada, confirmada, realizada, cancelada }

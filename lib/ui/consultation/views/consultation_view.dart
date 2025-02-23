@@ -69,10 +69,11 @@ class _ConsultationViewState extends State<ConsultationView> {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                final consultation = snapshot.data![index];
+                ConsultationWithDoctorAndPatientDto consultation =
+                    snapshot.data![index];
                 return InkWell(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    final result = await Navigator.push(
                       context,
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -96,6 +97,12 @@ class _ConsultationViewState extends State<ConsultationView> {
                         },
                       ),
                     );
+
+                    if (result == true) {
+                      setState(() {
+                        _viewModel.loadConsultationCommand.execute();
+                      });
+                    }
                   },
                   child: ConsultationCard(
                     patientName: consultation.patient.name,
@@ -147,6 +154,7 @@ class _ConsultationViewState extends State<ConsultationView> {
         },
         child: const Icon(Icons.post_add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

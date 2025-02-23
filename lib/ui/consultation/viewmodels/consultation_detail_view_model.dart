@@ -13,13 +13,7 @@ class ConsultationDetailViewModel extends ChangeNotifier {
 
   ConsultationWithDoctorAndPatientDto? get consultation => _consultation;
 
-  late final registerConsultationCommand = Command0(_registerConsultation);
   late final onSaveConsultationCommand = Command0(_onSave);
-
-  AsyncResult<Consultation> _registerConsultation() {
-    return _consultationRepository
-        .createConsultation(_consultation.toConsultation());
-  }
 
   void setConsultation(ConsultationWithDoctorAndPatientDto consultationDto) {
     _consultation = consultationDto;

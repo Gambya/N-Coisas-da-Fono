@@ -7,6 +7,7 @@ import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_with_doctor_and_patient_validator.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_detail_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/widgets/drop_down_buttom_from_field_patients.dart';
+import 'package:ncoisasdafono/ui/consultation/widgets/drop_down_consultation_status.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
@@ -23,35 +24,17 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
   late ConsultationDetailViewModel _viewModel;
   final ConsultationWithDoctorAndPatientValidator _validator =
       ConsultationWithDoctorAndPatientValidator();
-  ConsultationStatus _statusSelectioned = ConsultationStatus.agendada;
 
   @override
   void initState() {
     super.initState();
     _viewModel = context.read<ConsultationDetailViewModel>();
     _viewModel.setConsultation(widget.consultation);
-    _statusSelectioned = _viewModel.consultation!.status;
-    _viewModel.registerConsultationCommand
-        .addListener(_onRegisterConsultationCommandChanged);
     _viewModel.onSaveConsultationCommand.addListener(_onSave);
   }
 
-  void _onRegisterConsultationCommandChanged() {
-    if (_viewModel.registerConsultationCommand.isSuccess) {
-      Navigator.of(context).pop();
-    } else if (_viewModel.registerConsultationCommand.isFailure) {
-      final failure =
-          _viewModel.registerConsultationCommand.value as FailureCommand;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(failure.error.toString()),
-      ));
-    }
-  }
-
   void _onSave() {
-    if (_viewModel.onSaveConsultationCommand.isSuccess) {
-      Navigator.of(context).pop();
-    } else if (_viewModel.onSaveConsultationCommand.isFailure) {
+    if (_viewModel.onSaveConsultationCommand.isFailure) {
       final failure =
           _viewModel.onSaveConsultationCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -84,7 +67,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           },
         ),
         title: Text(
@@ -123,8 +106,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
               Icons.edit,
               color: Colors.white,
             ),
-            onPressed: () =>
-                _showEditBottomSheet(context, _viewModel.consultation!),
+            onPressed: () => _showEditBottomSheet(context),
           ),
         ],
       ),
@@ -392,6 +374,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
       showDragHandle: true,
       context: context,
       builder: (BuildContext context) {
+        ConsultationStatus statusSelectioned = obj.status;
         return StatefulBuilder(
           builder: (context, setStateBottomSheet) {
             return Container(
@@ -399,35 +382,14 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: 'Status',
-                      border: OutlineInputBorder(),
-                      errorStyle: TextStyle(color: Colors.red),
-                    ),
-                    child: DropdownButton<ConsultationStatus>(
-                      isExpanded: true,
-                      isDense: true,
-                      focusColor: Colors.white,
-                      value: _statusSelectioned,
-                      onChanged: (ConsultationStatus? newValue) {
-                        setStateBottomSheet(() {
-                          _statusSelectioned = newValue!;
-                          _viewModel.consultation!.status = newValue;
-                        });
-                      },
-                      items: ConsultationStatus.values
-                          .map((ConsultationStatus status) {
-                        return DropdownMenuItem<ConsultationStatus>(
-                          value: status,
-                          child: Text(status
-                              .toString()
-                              .toUpperCase()
-                              .split('.')
-                              .last), // Exibe o nome do Enum
-                        );
-                      }).toList(),
-                    ),
+                  DropDownConsultationStatus(
+                    initialStatus: statusSelectioned,
+                    onChanged: (ConsultationStatus? value) {
+                      setStateBottomSheet(() {
+                        statusSelectioned = value!;
+                        _viewModel.consultation!.status = statusSelectioned;
+                      });
+                    },
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -447,8 +409,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
     );
   }
 
-  void _showEditBottomSheet(
-      BuildContext context, ConsultationWithDoctorAndPatientDto obj) {
+  void _showEditBottomSheet(BuildContext context) {
     showModalBottomSheet(
       showDragHandle: true,
       isScrollControlled: true,
@@ -456,6 +417,11 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setStateBottomSheet) {
+            ConsultationStatus statusSelectioned =
+                _viewModel.consultation!.status;
+            TextEditingController dateController = TextEditingController();
+            dateController.text =
+                _formatarDataHora(_viewModel.consultation!.dateTime);
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.95,
               child: Padding(
@@ -465,7 +431,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                   child: Column(
                     children: [
                       TextFormField(
-                        initialValue: obj.title,
+                        initialValue: _viewModel.consultation!.title,
                         onChanged: (value) {
                           _viewModel.consultation!.title = value;
                         },
@@ -483,7 +449,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue: obj.description,
+                        initialValue: _viewModel.consultation!.description,
                         onChanged: (value) {
                           _viewModel.consultation!.description = value;
                         },
@@ -506,8 +472,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                         children: [
                           Expanded(
                             child: TextFormField(
-                              initialValue: DateFormat('dd/MM/yyyy hh:mm')
-                                  .format(obj.dateTime),
+                              controller: dateController,
                               readOnly: true,
                               onTap: () async {
                                 DateTime? pickedDate =
@@ -515,7 +480,9 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                                         context: context);
 
                                 if (pickedDate != null) {
-                                  setState(() {
+                                  setStateBottomSheet(() {
+                                    dateController.text =
+                                        _formatarDataHora(pickedDate);
                                     _viewModel.consultation!.dateTime =
                                         pickedDate;
                                   });
@@ -535,7 +502,9 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                                       context: context);
 
                               if (pickedDate != null) {
-                                setState(() {
+                                setStateBottomSheet(() {
+                                  dateController.text =
+                                      _formatarDataHora(pickedDate);
                                   _viewModel.consultation!.dateTime =
                                       pickedDate;
                                 });
@@ -550,7 +519,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue: obj.duration,
+                        initialValue: _viewModel.consultation!.duration,
                         onChanged: (value) {
                           _viewModel.consultation!.duration = value;
                         },
@@ -569,7 +538,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue: obj.value,
+                        initialValue: _viewModel.consultation!.value,
                         onChanged: (value) {
                           _viewModel.consultation!.value = value;
                         },
@@ -590,36 +559,14 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: 'Status',
-                          border: OutlineInputBorder(),
-                          errorStyle: TextStyle(color: Colors.red),
-                        ),
-                        child: DropdownButton<ConsultationStatus>(
-                          isExpanded: true,
-                          isDense: true,
-                          focusColor: Colors.white,
-                          value: _statusSelectioned, // Valor selecionado
-                          onChanged: (ConsultationStatus? newValue) {
-                            setState(() {
-                              _statusSelectioned = newValue!;
-                              _viewModel.consultation!.status =
-                                  _statusSelectioned;
-                            });
-                          },
-                          items: ConsultationStatus.values
-                              .map((ConsultationStatus status) {
-                            return DropdownMenuItem<ConsultationStatus>(
-                              value: status,
-                              child: Text(status
-                                  .toString()
-                                  .toUpperCase()
-                                  .split('.')
-                                  .last),
-                            );
-                          }).toList(),
-                        ),
+                      DropDownConsultationStatus(
+                        initialStatus: statusSelectioned,
+                        onChanged: (ConsultationStatus? value) {
+                          setStateBottomSheet(() {
+                            statusSelectioned = value!;
+                            _viewModel.consultation!.status = statusSelectioned;
+                          });
+                        },
                       ),
                       const SizedBox(height: 20),
                       DropDownButtomFromFieldPatients(
@@ -632,7 +579,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       ),
                       const SizedBox(height: 40),
                       ListenableBuilder(
-                        listenable: _viewModel.registerConsultationCommand,
+                        listenable: _viewModel.onSaveConsultationCommand,
                         builder: (context, _) {
                           return ElevatedButton(
                             style: ButtonStyle(
@@ -650,13 +597,13 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                               ),
                             ),
                             onPressed:
-                                _viewModel.registerConsultationCommand.isRunning
+                                _viewModel.onSaveConsultationCommand.isRunning
                                     ? null
                                     : () {
                                         if (_validator
                                             .validate(_viewModel.consultation!)
                                             .isValid) {
-                                          _viewModel.registerConsultationCommand
+                                          _viewModel.onSaveConsultationCommand
                                               .execute();
                                           Navigator.pop(context);
                                           setState(() {});
@@ -675,5 +622,9 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
         );
       },
     );
+  }
+
+  String _formatarDataHora(DateTime dateTime) {
+    return DateFormat('dd/MM/yyyy hh:mm').format(dateTime);
   }
 }

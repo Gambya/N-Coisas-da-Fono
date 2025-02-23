@@ -16,7 +16,7 @@ class LocalConsultationRepository implements ConsultationRepository {
         .saveData(consultation) //
         .onSuccess((_) async {
       final result = await getConsultations();
-      result.onSuccess((consultations) => _streamController.add);
+      result.onSuccess((consultations) => _streamController.add(consultations));
     }).pure(consultation);
   }
 
@@ -26,7 +26,7 @@ class LocalConsultationRepository implements ConsultationRepository {
         .deleteData(id) //
         .onSuccess((_) async {
       final result = await getConsultations();
-      result.onSuccess((consultations) => _streamController.add);
+      result.onSuccess((consultations) => _streamController.add(consultations));
     });
   }
 
@@ -48,7 +48,7 @@ class LocalConsultationRepository implements ConsultationRepository {
         .saveData(consultation) //
         .onSuccess((_) async {
       final result = await getConsultations();
-      result.onSuccess((consultations) => _streamController.add);
+      result.onSuccess((consultations) => _streamController.add(consultations));
     }).pure(consultation);
   }
 

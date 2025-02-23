@@ -97,8 +97,7 @@ class ConsultationCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  DateFormat('hh:mm:ss')
-                                      .format(consultationDate),
+                                  _formatTimeOfDay(consultationTime),
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.white,
@@ -139,5 +138,14 @@ class ConsultationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    const second =
+        '00'; // Como TimeOfDay não tem segundos, você pode definir como '00' ou algum valor fixo
+
+    return '$hour:$minute:$second';
   }
 }
