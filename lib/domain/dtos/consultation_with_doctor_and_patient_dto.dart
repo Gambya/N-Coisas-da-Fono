@@ -25,17 +25,18 @@ class ConsultationWithDoctorAndPatientDto {
   }
 
   Consultation toConsultation() {
-    final durationTemp = int.tryParse(duration);
-    return Consultation(
+    int? durationValue = int.tryParse(duration);
+    Consultation consultation = Consultation(
       id: id!,
       title: title,
       description: description,
       dateTime: dateTime,
-      duration: durationTemp ?? 0,
+      duration: durationValue ?? 0,
       value: value,
       status: status.name,
-      patientId: patient.id,
-      doctorId: doctor.id,
     );
+    consultation.patient.target = patient;
+    consultation.doctor.target = doctor;
+    return consultation;
   }
 }

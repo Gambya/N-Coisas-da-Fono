@@ -26,7 +26,7 @@ class GetConsultationsWithDoctorAndPatient {
             <ConsultationWithDoctorAndPatientDto>[];
         for (final consultation in consultations) {
           final doctor = await _getDoctorById();
-          final patient = await _getPatientById(consultation.patientId);
+          final patient = await _getPatientById(consultation.patient.targetId);
           final consultationTemp = ConsultationWithDoctorAndPatientDto(
             id: consultation.id,
             title: consultation.title,

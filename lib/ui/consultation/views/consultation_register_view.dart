@@ -41,7 +41,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
   }
 
   void _loadDoctor() async {
-    _consultation.doctorId = await _viewModel.loadDoctor();
+    _consultation.doctor = await _viewModel.loadDoctor();
   }
 
   void _onRegisterConsultationCommandChanged() {
@@ -248,7 +248,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                       ),
                       onChanged: (Patient? newValue) {
                         setState(() {
-                          _consultation.patientId = newValue!.id;
+                          _consultation.patient = newValue!;
                         });
                       },
                       validator: (value) {

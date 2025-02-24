@@ -38,7 +38,6 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(failure.error.toString()),
       ));
-      print(failure.error.toString());
     }
   }
 
