@@ -44,30 +44,10 @@ class LocalConsultationStorage {
           .order(Consultation_.dateTime) //
           .build()
           .find();
-      // final allData = await box.getAllAsync() as List<Consultation>;
-      final result = _convertList(allData);
-      return Success(result);
+      return Success(allData as List<Consultation>);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));
     }
-  }
-
-  List<Consultation> _convertList(List<dynamic> dados) {
-    List<Consultation> pacientes = [];
-
-    for (var dado in dados) {
-      // Verifique se o dado é um mapa (Map)
-      if (dado is Map<String, dynamic>) {
-        try {
-          Consultation paciente = Consultation.fromJson(dado);
-          pacientes.add(paciente);
-        } catch (e) {
-          throw Exception('Erro ao converter o dado para um objeto Patient');
-        }
-      }
-    }
-
-    return pacientes;
   }
 
   AsyncResult<Unit> deleteData(int id) async {

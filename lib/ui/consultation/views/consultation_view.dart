@@ -73,7 +73,7 @@ class _ConsultationViewState extends State<ConsultationView> {
                     snapshot.data![index];
                 return InkWell(
                   onTap: () async {
-                    final result = await Navigator.push(
+                    await Navigator.push(
                       context,
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -97,12 +97,6 @@ class _ConsultationViewState extends State<ConsultationView> {
                         },
                       ),
                     );
-
-                    if (result == true) {
-                      setState(() {
-                        _viewModel.loadConsultationCommand.execute();
-                      });
-                    }
                   },
                   child: ConsultationCard(
                     patientName: consultation.patient.name,

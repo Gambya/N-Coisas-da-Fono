@@ -33,7 +33,7 @@ class ConsultationDto {
   Consultation toEntity() {
     int? durationValue = int.tryParse(duration);
     Consultation consultation = Consultation(
-      id: id!,
+      id: id ?? 0,
       title: title,
       description: description,
       dateTime: dateTime,

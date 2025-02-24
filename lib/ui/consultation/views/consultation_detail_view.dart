@@ -67,7 +67,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.pop(context, true);
+            Navigator.pop(context);
           },
         ),
         title: Text(
@@ -214,7 +214,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('hh:mm:ss')
+                        DateFormat('hh:mm')
                             .format(_viewModel.consultation!.dateTime),
                         style: const TextStyle(
                           fontSize: 13,

@@ -25,8 +25,6 @@ class GetConsultationsWithDoctorAndPatient {
         final consultationsWithDoctorAndPatient =
             <ConsultationWithDoctorAndPatientDto>[];
         for (final consultation in consultations) {
-          final doctor = await _getDoctorById();
-          final patient = await _getPatientById(consultation.patient.targetId);
           final consultationTemp = ConsultationWithDoctorAndPatientDto(
             id: consultation.id,
             title: consultation.title,
@@ -35,18 +33,11 @@ class GetConsultationsWithDoctorAndPatient {
             value: consultation.value,
             status: ConsultationStatus.values.byName(consultation.status),
           );
-          consultationTemp.doctor = doctor.getOrNull()!;
-          consultationTemp.patient = patient.getOrNull()!;
+          consultationTemp.dateTime = consultation.dateTime!;
+          consultationTemp.doctor = consultation.doctor.target!;
+          consultationTemp.patient = consultation.patient.target!;
           consultationsWithDoctorAndPatient.add(consultationTemp);
         }
         return consultationsWithDoctorAndPatient;
       });
-
-  AsyncResult<Doctor> _getDoctorById() async {
-    return await _doctorRepository.getDoctor();
-  }
-
-  AsyncResult<Patient> _getPatientById(int id) async {
-    return await _patientRepository.getPatient(id);
-  }
 }
