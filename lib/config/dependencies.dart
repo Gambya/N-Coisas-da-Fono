@@ -53,8 +53,6 @@ List<SingleChildWidget> get providers {
     Provider<GetConsultationsWithDoctorAndPatient>(
       create: (context) => GetConsultationsWithDoctorAndPatient(
         context.read<ConsultationRepository>(),
-        context.read<DoctorRepository>(),
-        context.read<PatientRepository>(),
       ),
     ),
     ChangeNotifierProvider(
