@@ -1,7 +1,10 @@
+import 'package:intl/intl.dart';
 import 'package:lucid_validation/lucid_validation.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 
 class ConsultationValidator extends LucidValidator<ConsultationDto> {
+  DateFormat format = DateFormat("dd/MM/yyyy HH:mm:ss");
+
   ConsultationValidator() {
     ruleFor((consultation) => consultation.title, key: 'title')
         .notEmpty(message: "É necessário o preenchimento do título")

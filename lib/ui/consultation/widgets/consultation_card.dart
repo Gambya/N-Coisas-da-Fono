@@ -22,8 +22,7 @@ class ConsultationCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0.5),
       child: Card(
-        color: Color.fromARGB(
-            255, 215, 186, 232), //Color.fromARGB(255, 193, 214, 255),
+        color: Color.fromARGB(255, 215, 186, 232),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -31,7 +30,6 @@ class ConsultationCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Foto do paciente ou iniciais
                   if (photoUrl != null && photoUrl!.isNotEmpty)
                     CircleAvatar(
                       backgroundImage: NetworkImage(photoUrl!),
@@ -99,8 +97,7 @@ class ConsultationCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  DateFormat('hh:mm:ss')
-                                      .format(consultationDate),
+                                  _formatTimeOfDay(consultationTime),
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.white,
@@ -141,5 +138,14 @@ class ConsultationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    const second =
+        '00'; // Como TimeOfDay não tem segundos, você pode definir como '00' ou algum valor fixo
+
+    return '$hour:$minute:$second';
   }
 }

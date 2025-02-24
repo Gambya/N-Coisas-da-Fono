@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
-import 'package:ncoisasdafono/ui/home/widgets/consultation_view.dart';
-import 'package:ncoisasdafono/ui/home/widgets/doctor_view.dart';
-import 'package:ncoisasdafono/ui/home/widgets/patient_view.dart';
+import 'package:ncoisasdafono/ui/consultation/views/consultation_view.dart';
+import 'package:ncoisasdafono/ui/doctor/views/doctor_view.dart';
+import 'package:ncoisasdafono/ui/patient/views/patient_view.dart';
 
 class HomeView extends StatefulWidget {
   final HomeViewModel viewModel;
@@ -87,7 +87,7 @@ class _HomeViewState extends State<HomeView> {
           boxShadow: [
             BoxShadow(
               blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
+              color: Colors.black.withValues(alpha: .1),
             )
           ],
         ),

@@ -23,4 +23,20 @@ class ConsultationWithDoctorAndPatientDto {
   }) {
     dateTime = DateTime.now();
   }
+
+  Consultation toConsultation() {
+    int? durationValue = int.tryParse(duration);
+    Consultation consultation = Consultation(
+      id: id!,
+      title: title,
+      description: description,
+      dateTime: dateTime,
+      duration: durationValue ?? 0,
+      value: value,
+      status: status.name,
+    );
+    consultation.patient.target = patient;
+    consultation.doctor.target = doctor;
+    return consultation;
+  }
 }

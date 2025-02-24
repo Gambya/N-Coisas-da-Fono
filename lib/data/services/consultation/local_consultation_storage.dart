@@ -1,7 +1,7 @@
 import 'package:ncoisasdafono/config/object_box_database.dart';
+import 'package:ncoisasdafono/config/objectbox.g.dart';
 import 'package:ncoisasdafono/data/exceptions/exceptions.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
-import 'package:objectbox/objectbox.dart';
 import 'package:result_dart/result_dart.dart';
 
 class LocalConsultationStorage {
@@ -39,9 +39,12 @@ class LocalConsultationStorage {
   AsyncResult<List<Consultation>> getAllData() async {
     try {
       final box = await getBox();
-      final allData = await box.getAllAsync() as List<Consultation>;
-
-      return Success(allData);
+      final allData = box
+          .query()
+          .order(Consultation_.dateTime) //
+          .build()
+          .find();
+      return Success(allData as List<Consultation>);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));
     }

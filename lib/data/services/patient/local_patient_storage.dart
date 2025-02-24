@@ -56,4 +56,35 @@ class LocalPatientStorage {
       return Failure(LocalStorageException(e.toString(), s));
     }
   }
+
+  AsyncResult<List<Patient>> query([Condition<dynamic>? query]) async {
+    try {
+      final box = await getBox();
+      final queryResult = box.query(query).build().find();
+      final result = _convertList(queryResult);
+      return Success(result);
+    } catch (e, s) {
+      return Failure(LocalStorageException(e.toString(), s));
+    }
+  }
+
+  List<Patient> _convertList(List<dynamic> dados) {
+    List<Patient> pacientes = [];
+
+    for (var dado in dados) {
+      // Verifique se o dado é um mapa (Map)
+      if (dado is Map<String, dynamic>) {
+        try {
+          // Crie um objeto Patient a partir do mapa
+          Patient paciente = Patient.fromJson(
+              dado); // Assumindo que Patient tem um método fromJson
+          pacientes.add(paciente);
+        } catch (e) {
+          throw Exception('Erro ao converter o dado para um objeto Patient');
+        }
+      }
+    }
+
+    return pacientes;
+  }
 }

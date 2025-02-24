@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/consultation_repository.dart';
 import 'package:ncoisasdafono/data/services/consultation/local_consultation_storage.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
@@ -14,9 +15,10 @@ class LocalConsultationRepository implements ConsultationRepository {
   AsyncResult<Consultation> createConsultation(Consultation consultation) {
     return _storage
         .saveData(consultation) //
-        .onSuccess((_) async {
-      final result = await getConsultations();
-      result.onSuccess((consultations) => _streamController.add);
+        .onSuccess((consultation) async {
+      await getConsultations().onSuccess((consultations) {
+        _streamController.add(consultations);
+      });
     }).pure(consultation);
   }
 
@@ -26,7 +28,7 @@ class LocalConsultationRepository implements ConsultationRepository {
         .deleteData(id) //
         .onSuccess((_) async {
       final result = await getConsultations();
-      result.onSuccess((consultations) => _streamController.add);
+      result.onSuccess((consultations) => _streamController.add(consultations));
     });
   }
 
@@ -48,7 +50,7 @@ class LocalConsultationRepository implements ConsultationRepository {
         .saveData(consultation) //
         .onSuccess((_) async {
       final result = await getConsultations();
-      result.onSuccess((consultations) => _streamController.add);
+      result.onSuccess((consultations) => _streamController.add(consultations));
     }).pure(consultation);
   }
 

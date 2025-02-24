@@ -6,6 +6,7 @@ import 'package:ncoisasdafono/data/repositories/doctor/doctor_repository.dart';
 import 'package:ncoisasdafono/data/repositories/patient/patient_repository.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
+import 'package:ncoisasdafono/domain/entities/doctor.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
@@ -36,10 +37,10 @@ class ConsultationRegisterViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int?> loadDoctor() async {
+  Future<Doctor?> loadDoctor() async {
     final doctor = await _doctorRepository.getDoctor().getOrNull();
     notifyListeners();
-    if (doctor != null) return doctor.id;
+    if (doctor != null) return doctor;
     return null;
   }
 }

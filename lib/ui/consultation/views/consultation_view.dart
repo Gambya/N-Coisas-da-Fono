@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
+import 'package:ncoisasdafono/ui/consultation/views/consultation_detail_view.dart';
 import 'package:ncoisasdafono/ui/consultation/views/consultation_register_view.dart';
-import 'package:ncoisasdafono/ui/home/viewmodels/consultation_view_model.dart';
-import 'package:ncoisasdafono/ui/home/widgets/consultation_card.dart';
+import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_view_model.dart';
+import 'package:ncoisasdafono/ui/consultation/widgets/consultation_card.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 
@@ -68,14 +69,43 @@ class _ConsultationViewState extends State<ConsultationView> {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                final consultation = snapshot.data![index];
-                return ConsultationCard(
-                  patientName: consultation.patient.name,
-                  photoUrl: consultation.patient.photoUrl,
-                  consultationDate: consultation.dateTime,
-                  consultationTime:
-                      TimeOfDay.fromDateTime(consultation.dateTime),
-                  consultationDuration: int.tryParse(consultation.duration)!,
+                ConsultationWithDoctorAndPatientDto consultation =
+                    snapshot.data![index];
+                return InkWell(
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            ConsultationDetailView(
+                          consultation: consultation,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(0.0, 1.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end).chain(
+                            CurveTween(curve: curve),
+                          );
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: ConsultationCard(
+                    patientName: consultation.patient.name,
+                    photoUrl: consultation.patient.photoUrl,
+                    consultationDate: consultation.dateTime,
+                    consultationTime:
+                        TimeOfDay.fromDateTime(consultation.dateTime),
+                    consultationDuration: int.tryParse(consultation.duration)!,
+                  ),
                 );
               },
             );
@@ -118,6 +148,7 @@ class _ConsultationViewState extends State<ConsultationView> {
         },
         child: const Icon(Icons.post_add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -65,13 +65,17 @@ final _entities = <obx_int.ModelEntity>[
         obx_int.ModelProperty(
             id: const obx_int.IdUid(8, 8585471975098633400),
             name: 'patientId',
-            type: 6,
-            flags: 0),
+            type: 11,
+            flags: 520,
+            indexId: const obx_int.IdUid(8, 8196349327755732588),
+            relationTarget: 'Patient'),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(9, 5853969057493210329),
             name: 'doctorId',
-            type: 6,
-            flags: 0)
+            type: 11,
+            flags: 520,
+            indexId: const obx_int.IdUid(7, 7996620853202627082),
+            relationTarget: 'Doctor')
       ],
       relations: <obx_int.ModelRelation>[],
       backlinks: <obx_int.ModelBacklink>[]),
@@ -123,7 +127,12 @@ final _entities = <obx_int.ModelEntity>[
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
-      backlinks: <obx_int.ModelBacklink>[]),
+      backlinks: <obx_int.ModelBacklink>[
+        obx_int.ModelBacklink(
+            name: 'consultations',
+            srcEntity: 'Consultation',
+            srcField: 'doctor')
+      ]),
   obx_int.ModelEntity(
       id: const obx_int.IdUid(3, 5894913375927753702),
       name: 'Patient',
@@ -139,12 +148,14 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(2, 4230244372338902733),
             name: 'name',
             type: 9,
-            flags: 0),
+            flags: 2080,
+            indexId: const obx_int.IdUid(3, 3610276734300169516)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(3, 6613581924477705183),
             name: 'email',
             type: 9,
-            flags: 0),
+            flags: 2080,
+            indexId: const obx_int.IdUid(4, 1839138909313388302)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(4, 2921673588245155823),
             name: 'phone',
@@ -154,12 +165,14 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(5, 8579281934854708367),
             name: 'cpf',
             type: 9,
-            flags: 0),
+            flags: 2080,
+            indexId: const obx_int.IdUid(5, 2836424538992017426)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(6, 8333948979212999197),
             name: 'rg',
             type: 9,
-            flags: 0),
+            flags: 2080,
+            indexId: const obx_int.IdUid(6, 3915641518726470406)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(7, 7084805928520916682),
             name: 'photoUrl',
@@ -167,7 +180,12 @@ final _entities = <obx_int.ModelEntity>[
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
-      backlinks: <obx_int.ModelBacklink>[])
+      backlinks: <obx_int.ModelBacklink>[
+        obx_int.ModelBacklink(
+            name: 'consultations',
+            srcEntity: 'Consultation',
+            srcField: 'patient')
+      ])
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -206,7 +224,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
       lastEntityId: const obx_int.IdUid(3, 5894913375927753702),
-      lastIndexId: const obx_int.IdUid(2, 8647010289486896385),
+      lastIndexId: const obx_int.IdUid(8, 8196349327755732588),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],
@@ -220,7 +238,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
   final bindings = <Type, obx_int.EntityDefinition>{
     Consultation: obx_int.EntityDefinition<Consultation>(
         model: _entities[0],
-        toOneRelations: (Consultation object) => [],
+        toOneRelations: (Consultation object) =>
+            [object.patient, object.doctor],
         toManyRelations: (Consultation object) => {},
         getId: (Consultation object) => object.id,
         setId: (Consultation object, int id) {
@@ -235,18 +254,20 @@ obx_int.ModelDefinition getObjectBoxModel() {
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, titleOffset);
           fbb.addOffset(2, descriptionOffset);
-          fbb.addInt64(3, object.dateTime.millisecondsSinceEpoch);
+          fbb.addInt64(3, object.dateTime?.millisecondsSinceEpoch);
           fbb.addInt64(4, object.duration);
           fbb.addOffset(5, valueOffset);
           fbb.addOffset(6, statusOffset);
-          fbb.addInt64(7, object.patientId);
-          fbb.addInt64(8, object.doctorId);
+          fbb.addInt64(7, object.patient.targetId);
+          fbb.addInt64(8, object.doctor.targetId);
           fbb.finish(fbb.endTable());
           return object.id;
         },
         objectFromFB: (obx.Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
+          final dateTimeValue =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 10);
           final idParam =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
           final titleParam = const fb.StringReader(asciiOptimization: true)
@@ -254,18 +275,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final descriptionParam =
               const fb.StringReader(asciiOptimization: true)
                   .vTableGet(buffer, rootOffset, 8, '');
-          final dateTimeParam = DateTime.fromMillisecondsSinceEpoch(
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0));
+          final dateTimeParam = dateTimeValue == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(dateTimeValue);
           final durationParam =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 12, 0);
           final valueParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 14, '');
           final statusParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 16, '');
-          final patientIdParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 18, 0);
-          final doctorIdParam =
-              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 20);
           final object = Consultation(
               id: idParam,
               title: titleParam,
@@ -273,16 +291,23 @@ obx_int.ModelDefinition getObjectBoxModel() {
               dateTime: dateTimeParam,
               duration: durationParam,
               value: valueParam,
-              status: statusParam,
-              patientId: patientIdParam,
-              doctorId: doctorIdParam);
-
+              status: statusParam);
+          object.patient.targetId =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 18, 0);
+          object.patient.attach(store);
+          object.doctor.targetId =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 20, 0);
+          object.doctor.attach(store);
           return object;
         }),
     Doctor: obx_int.EntityDefinition<Doctor>(
         model: _entities[1],
         toOneRelations: (Doctor object) => [],
-        toManyRelations: (Doctor object) => {},
+        toManyRelations: (Doctor object) => {
+              obx_int.RelInfo<Consultation>.toOneBacklink(9, object.id,
+                      (Consultation srcObject) => srcObject.doctor):
+                  object.consultations
+            },
         getId: (Doctor object) => object.id,
         setId: (Doctor object, int id) {
           object.id = id;
@@ -337,13 +362,21 @@ obx_int.ModelDefinition getObjectBoxModel() {
               crfa: crfaParam,
               specialty: specialtyParam,
               address: addressParam);
-
+          obx_int.InternalToManyAccess.setRelInfo<Doctor>(
+              object.consultations,
+              store,
+              obx_int.RelInfo<Consultation>.toOneBacklink(
+                  9, object.id, (Consultation srcObject) => srcObject.doctor));
           return object;
         }),
     Patient: obx_int.EntityDefinition<Patient>(
         model: _entities[2],
         toOneRelations: (Patient object) => [],
-        toManyRelations: (Patient object) => {},
+        toManyRelations: (Patient object) => {
+              obx_int.RelInfo<Consultation>.toOneBacklink(8, object.id,
+                      (Consultation srcObject) => srcObject.patient):
+                  object.consultations
+            },
         getId: (Patient object) => object.id,
         setId: (Patient object, int id) {
           object.id = id;
@@ -395,7 +428,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
               photoUrl: photoUrlParam,
               cpf: cpfParam,
               rg: rgParam);
-
+          obx_int.InternalToManyAccess.setRelInfo<Patient>(
+              object.consultations,
+              store,
+              obx_int.RelInfo<Consultation>.toOneBacklink(
+                  8, object.id, (Consultation srcObject) => srcObject.patient));
           return object;
         })
   };
@@ -433,13 +470,13 @@ class Consultation_ {
   static final status =
       obx.QueryStringProperty<Consultation>(_entities[0].properties[6]);
 
-  /// See [Consultation.patientId].
-  static final patientId =
-      obx.QueryIntegerProperty<Consultation>(_entities[0].properties[7]);
+  /// See [Consultation.patient].
+  static final patient =
+      obx.QueryRelationToOne<Consultation, Patient>(_entities[0].properties[7]);
 
-  /// See [Consultation.doctorId].
-  static final doctorId =
-      obx.QueryIntegerProperty<Consultation>(_entities[0].properties[8]);
+  /// See [Consultation.doctor].
+  static final doctor =
+      obx.QueryRelationToOne<Consultation, Doctor>(_entities[0].properties[8]);
 }
 
 /// [Doctor] entity fields to define ObjectBox queries.
@@ -475,6 +512,10 @@ class Doctor_ {
   /// See [Doctor.address].
   static final address =
       obx.QueryStringProperty<Doctor>(_entities[1].properties[7]);
+
+  /// see [Doctor.consultations]
+  static final consultations =
+      obx.QueryBacklinkToMany<Consultation, Doctor>(Consultation_.doctor);
 }
 
 /// [Patient] entity fields to define ObjectBox queries.
@@ -506,4 +547,8 @@ class Patient_ {
   /// See [Patient.photoUrl].
   static final photoUrl =
       obx.QueryStringProperty<Patient>(_entities[2].properties[6]);
+
+  /// see [Patient.consultations]
+  static final consultations =
+      obx.QueryBacklinkToMany<Consultation, Patient>(Consultation_.patient);
 }

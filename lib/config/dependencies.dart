@@ -9,11 +9,14 @@ import 'package:ncoisasdafono/data/services/consultation/local_consultation_stor
 import 'package:ncoisasdafono/data/services/doctor/local_doctor_storage.dart';
 import 'package:ncoisasdafono/data/services/patient/local_patient_storage.dart';
 import 'package:ncoisasdafono/domain/usecases/consultation/get_consultations_with_doctor_and_patient.dart';
+import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_detail_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
+import 'package:ncoisasdafono/ui/consultation/widgets/viewmodels/drop_down_buttom_from_field_patients_view_model.dart';
 import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_register_view_model.dart';
-import 'package:ncoisasdafono/ui/home/viewmodels/consultation_view_model.dart';
+import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_view_model.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/viewmodels/patient_view_model.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -50,8 +53,6 @@ List<SingleChildWidget> get providers {
     Provider<GetConsultationsWithDoctorAndPatient>(
       create: (context) => GetConsultationsWithDoctorAndPatient(
         context.read<ConsultationRepository>(),
-        context.read<DoctorRepository>(),
-        context.read<PatientRepository>(),
       ),
     ),
     ChangeNotifierProvider(
@@ -77,10 +78,25 @@ List<SingleChildWidget> get providers {
       ),
     ),
     ChangeNotifierProvider(
+      create: (context) => ConsultationDetailViewModel(
+        context.read<ConsultationRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider(
       create: (context) => ConsultationViewModel(
         context.read<ConsultationRepository>(),
         context.read<GetConsultationsWithDoctorAndPatient>(),
       ),
-    )
+    ),
+    ChangeNotifierProvider(
+      create: (context) => DropDownButtomFromFieldPatientsViewModel(
+        context.read<PatientRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => PatientViewModel(
+        context.read<PatientRepository>(),
+      ),
+    ),
   ];
 }
