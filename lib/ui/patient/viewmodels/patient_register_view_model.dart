@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:ncoisasdafono/data/repositories/patient/patient_repository.dart';
 import 'package:ncoisasdafono/domain/dtos/patient_dto.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
