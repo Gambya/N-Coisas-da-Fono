@@ -15,6 +15,7 @@ import 'package:ncoisasdafono/ui/consultation/widgets/viewmodels/drop_down_butto
 import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_register_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_view_model.dart';
 import 'package:ncoisasdafono/ui/home/viewmodels/home_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/viewmodels/patient_details_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_view_model.dart';
 import 'package:provider/single_child_widget.dart';
@@ -95,6 +96,11 @@ List<SingleChildWidget> get providers {
     ),
     ChangeNotifierProvider(
       create: (context) => PatientViewModel(
+        context.read<PatientRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => PatientDetailsViewModel(
         context.read<PatientRepository>(),
       ),
     ),

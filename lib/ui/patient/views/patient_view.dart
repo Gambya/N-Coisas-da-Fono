@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/views/patient_details_view.dart';
 import 'package:ncoisasdafono/ui/patient/views/patient_register_view.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
@@ -63,8 +64,7 @@ class _PatientViewState extends State<PatientView> {
             return ListView.builder(
               itemBuilder: (context, index) {
                 Patient patient = snapshot.data![index];
-                return _buildPatientItem(
-                    patient.photoUrl, patient.name, patient.email);
+                return _buildPatientItem(patient);
               },
               itemCount: snapshot.data?.length ?? 0,
             );
@@ -111,25 +111,50 @@ class _PatientViewState extends State<PatientView> {
     );
   }
 
-  Widget _buildPatientItem(String? photoUrl, String name, String email) {
+  Widget _buildPatientItem(Patient patient) {
     return Padding(
       padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
       child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    PatientDetailsView(
+                  patient: patient,
+                ),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(0.0, 1.0);
+                  const end = Offset.zero;
+                  const curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end).chain(
+                    CurveTween(curve: curve),
+                  );
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+              ),
+            );
+          },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Row(
                 children: [
-                  if (photoUrl != null && photoUrl.isNotEmpty)
+                  if (patient.photoUrl != null && patient.photoUrl!.isNotEmpty)
                     CircleAvatar(
-                      backgroundImage: NetworkImage(photoUrl),
+                      backgroundImage: NetworkImage(patient.photoUrl!),
                     )
                   else
                     CircleAvatar(
                       backgroundColor: Color.fromARGB(255, 215, 186, 232),
                       child: Text(
-                        name.substring(0, 2).toUpperCase(),
+                        patient.name.substring(0, 2).toUpperCase(),
                         style: TextStyle(
                           color: Color.fromARGB(255, 193, 214, 255),
                         ),
@@ -142,7 +167,7 @@ class _PatientViewState extends State<PatientView> {
                       SizedBox(
                         width: 200.0,
                         child: Text(
-                          name,
+                          patient.name,
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontSize: 14.0,
@@ -151,7 +176,7 @@ class _PatientViewState extends State<PatientView> {
                         ),
                       ),
                       Text(
-                        email,
+                        patient.email,
                         style: TextStyle(
                           fontFamily: 'Montserrat',
                           fontSize: 12.0,

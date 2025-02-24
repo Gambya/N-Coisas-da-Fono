@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/consultation_repository.dart';
 import 'package:ncoisasdafono/data/services/consultation/local_consultation_storage.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
