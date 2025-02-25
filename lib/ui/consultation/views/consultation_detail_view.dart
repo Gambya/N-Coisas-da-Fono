@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
@@ -137,27 +140,57 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             Center(
               child: Stack(
                 children: [
-                  if (_viewModel.consultation!.patient.photoUrl != null &&
-                      _viewModel.consultation!.patient.photoUrl!.isNotEmpty)
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                          _viewModel.consultation!.patient.photoUrl!),
-                    )
-                  else
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Color.fromARGB(255, 193, 214, 255),
-                      child: Text(
-                        _viewModel.consultation!.patient.name
-                            .substring(0, 2)
-                            .toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                        ),
-                      ),
-                    ),
+                  InkWell(
+                    onTap: () async {
+                      String? image = await _showDialogSelectImage(context);
+                      if (image != null) {
+                        _viewModel.consultation!.patient.photoUrl = image;
+                        _viewModel.onSaveConsultationCommand.execute();
+                        setState(() {});
+                      }
+                    },
+                    child: _viewModel.consultation!.patient.photoUrl != null &&
+                            _viewModel
+                                .consultation!.patient.photoUrl!.isNotEmpty
+                        ? Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 5.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: Image.file(File(_viewModel
+                                      .consultation!.patient.photoUrl!))
+                                  .image,
+                            ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 2.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor:
+                                  Color.fromARGB(255, 193, 214, 255),
+                              child: Text(
+                                _viewModel.consultation!.patient.name
+                                    .substring(0, 2)
+                                    .toUpperCase(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                ),
+                              ),
+                            ),
+                          ),
+                  ),
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -423,7 +456,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             dateController.text =
                 _formatarDataHora(_viewModel.consultation!.dateTime);
             return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.90,
+              height: MediaQuery.of(context).size.height * 0.85,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
@@ -626,5 +659,70 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
 
   String _formatarDataHora(DateTime dateTime) {
     return DateFormat('dd/MM/yyyy hh:mm').format(dateTime);
+  }
+
+  Future<String?> _showDialogSelectImage(BuildContext context) async {
+    return await showDialog<String?>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Selecione Opções"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(Icons.camera_alt),
+                  title: Text("Câmera"),
+                  onTap: () async {
+                    Navigator.pop(context, await _selectCameraImage(context));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo),
+                  title: Text("Galeria"),
+                  onTap: () async {
+                    Navigator.pop(context, await _selectGalletyImage(context));
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<String?> _selectCameraImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+
+    try {
+      XFile? file = await picker.pickImage(source: ImageSource.camera);
+      if (file != null) {
+        return file.path;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
+    return null;
+  }
+
+  Future<String?> _selectGalletyImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+
+    try {
+      XFile? file = await picker.pickImage(source: ImageSource.gallery);
+      if (file != null) {
+        return file.path;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
+    return null;
   }
 }

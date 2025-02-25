@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
@@ -148,7 +150,8 @@ class _PatientViewState extends State<PatientView> {
                 children: [
                   if (patient.photoUrl != null && patient.photoUrl!.isNotEmpty)
                     CircleAvatar(
-                      backgroundImage: NetworkImage(patient.photoUrl!),
+                      backgroundImage:
+                          Image.file(File(patient.photoUrl!)).image,
                     )
                   else
                     CircleAvatar(
