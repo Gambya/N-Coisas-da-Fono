@@ -115,7 +115,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 GButton(
                   icon: Icons.medical_information,
-                  text: 'Profile',
+                  text: 'Perfil',
                 ),
               ],
               selectedIndex: _selectedIndex,

@@ -273,7 +273,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      _viewModel.patient.cpf ?? '',
+                      _viewModel.patient.rg ?? '',
                       style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 16.0,
