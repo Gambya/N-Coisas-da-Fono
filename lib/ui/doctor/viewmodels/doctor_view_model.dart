@@ -12,10 +12,18 @@ class DoctorViewModel extends ChangeNotifier {
   Stream<Doctor> get doctorsStream => _doctorRepository.doctorObserver();
 
   late final loadDoctorsCommand = Command0(_loadDoctors);
+  late final onSaveDoctorCommand = Command1(_onSaveDoctors);
 
   AsyncResult<Doctor> _loadDoctors() {
     return _doctorRepository
         .getDoctor() //
+        .onSuccess((_) => notifyListeners())
+        .onFailure((e) => Failure(e));
+  }
+
+  AsyncResult<Doctor> _onSaveDoctors(Doctor doctor) {
+    return _doctorRepository
+        .updateDoctor(doctor) //
         .onSuccess((_) => notifyListeners())
         .onFailure((e) => Failure(e));
   }

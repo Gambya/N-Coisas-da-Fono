@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/dtos/doctor_dto.dart';
-import 'package:ncoisasdafono/domain/validators/doctor_validator.dart';
+import 'package:ncoisasdafono/domain/validators/doctor_dto_validator.dart';
 import 'package:ncoisasdafono/routing/routes.dart';
 import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_register_view_model.dart';
 import 'package:result_command/result_command.dart';
@@ -18,7 +18,7 @@ class DoctorRegisterView extends StatefulWidget {
 
 class _DoctorRegisterViewState extends State<DoctorRegisterView> {
   late DoctorRegisterViewModel _viewModel;
-  final DoctorValidator _validator = DoctorValidator();
+  final DoctorDtoValidator _validator = DoctorDtoValidator();
   final DoctorDto _doctor = DoctorDto();
 
   @override
