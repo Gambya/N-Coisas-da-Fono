@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -32,7 +34,7 @@ class ConsultationCard extends StatelessWidget {
                 children: [
                   if (photoUrl != null && photoUrl!.isNotEmpty)
                     CircleAvatar(
-                      backgroundImage: NetworkImage(photoUrl!),
+                      backgroundImage: Image.file(File(photoUrl!)).image,
                     )
                   else
                     CircleAvatar(
