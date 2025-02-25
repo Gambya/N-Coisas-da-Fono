@@ -1,8 +1,8 @@
 import 'package:lucid_validation/lucid_validation.dart';
-import 'package:ncoisasdafono/domain/entities/doctor.dart';
+import 'package:ncoisasdafono/domain/dtos/doctor_dto.dart';
 
-class DoctorValidator extends LucidValidator<Doctor> {
-  DoctorValidator() {
+class DoctorDtoValidator extends LucidValidator<DoctorDto> {
+  DoctorDtoValidator() {
     ruleFor((doctor) => doctor.email, key: 'email') //
         .notEmpty(message: "É necessário o preenchimento do email")
         .validEmail(message: 'E-mail inválido');
