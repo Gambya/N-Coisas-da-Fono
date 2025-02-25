@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
+import 'package:ncoisasdafono/domain/validators/patient_validator.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_details_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
@@ -14,6 +16,7 @@ class PatientDetailsView extends StatefulWidget {
 
 class _PatientDetailsViewState extends State<PatientDetailsView> {
   late PatientDetailsViewModel _viewModel;
+  final PatientValidator _validator = PatientValidator();
 
   @override
   void initState() {
@@ -315,8 +318,166 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
   }
 
-  Widget _showEditBottomSheet(BuildContext context) {
-    return Center();
+  void _showEditBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      showDragHandle: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setStateBottomSheet) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.90,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      Text('Paciente'),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () {},
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey[200],
+                          child: Icon(
+                            Icons.person,
+                            size: 60,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        initialValue: _viewModel.patient.name,
+                        onChanged: (value) {
+                          _viewModel.patient.name = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator:
+                            _validator.byField(_viewModel.patient, 'name'),
+                        decoration: InputDecoration(
+                          labelText: 'Nome',
+                          border: OutlineInputBorder(),
+                          errorStyle: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        initialValue: _viewModel.patient.email,
+                        onChanged: (value) {
+                          _viewModel.patient.email = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator:
+                            _validator.byField(_viewModel.patient, 'email'),
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          labelText: 'E-mail',
+                          border: OutlineInputBorder(),
+                          errorStyle: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        initialValue: _viewModel.patient.phone,
+                        onChanged: (value) {
+                          _viewModel.patient.phone = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator:
+                            _validator.byField(_viewModel.patient, 'phone'),
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                              mask: '(##) #####-####',
+                              filter: {"#": RegExp(r'[0-9]')}),
+                        ],
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          labelText: 'Celular/Telefone',
+                          border: OutlineInputBorder(),
+                          errorStyle: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        initialValue: _viewModel.patient.cpf,
+                        onChanged: (value) {
+                          _viewModel.patient.cpf = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator:
+                            _validator.byField(_viewModel.patient, 'cpf'),
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                              mask: '###.###.###-##',
+                              filter: {"#": RegExp(r'[0-9]')}),
+                        ],
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'CPF',
+                          border: OutlineInputBorder(),
+                          errorStyle: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        initialValue: _viewModel.patient.rg,
+                        onChanged: (value) {
+                          _viewModel.patient.rg = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'RG',
+                          border: OutlineInputBorder(),
+                          errorStyle: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      ListenableBuilder(
+                        listenable: _viewModel.onSavePatientCommand,
+                        builder: (context, _) {
+                          return ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all<Color>(
+                                Color.fromARGB(255, 193, 214, 255),
+                              ),
+                              foregroundColor: WidgetStateProperty.all<Color>(
+                                Colors.white,
+                              ),
+                              shape: WidgetStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                            onPressed: _viewModel.onSavePatientCommand.isRunning
+                                ? null
+                                : () {
+                                    if (_validator
+                                        .validate(_viewModel.patient)
+                                        .isValid) {
+                                      _viewModel.onSavePatientCommand.execute();
+                                      Navigator.pop(context);
+                                      setState(() {});
+                                    }
+                                  },
+                            child: const Text('Salvar'),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _showPhoneCallBottomSheet(BuildContext context) {

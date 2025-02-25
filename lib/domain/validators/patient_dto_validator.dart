@@ -1,8 +1,8 @@
 import 'package:lucid_validation/lucid_validation.dart';
-import 'package:ncoisasdafono/domain/entities/patient.dart';
+import 'package:ncoisasdafono/domain/dtos/patient_dto.dart';
 
-class PatientValidator extends LucidValidator<Patient> {
-  PatientValidator() {
+class PatientDtoValidator extends LucidValidator<PatientDto> {
+  PatientDtoValidator() {
     ruleFor((patient) => patient.name, key: 'name')
         .notEmpty(message: 'É necessário o preenchimento do nome')
         .minLength(3, message: 'Nome deve ter no mínimo 3 caracteres');

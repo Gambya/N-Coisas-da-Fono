@@ -423,7 +423,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             dateController.text =
                 _formatarDataHora(_viewModel.consultation!.dateTime);
             return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.95,
+              height: MediaQuery.of(context).size.height * 0.90,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
