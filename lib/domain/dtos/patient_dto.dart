@@ -5,6 +5,7 @@ class PatientDto {
   String name;
   String email;
   String phone;
+  String? photoUrl;
   String? cpf;
   String? rg;
 
@@ -13,6 +14,7 @@ class PatientDto {
     this.name = "",
     this.email = "",
     this.phone = "",
+    this.photoUrl,
     this.cpf,
     this.rg,
   });
@@ -23,6 +25,7 @@ class PatientDto {
       name: name,
       email: email,
       phone: phone,
+      photoUrl: photoUrl,
       cpf: cpf,
       rg: rg,
     );

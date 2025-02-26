@@ -13,11 +13,15 @@ class PatientRegisterViewModel extends ChangeNotifier {
   late final registerPatientCommand = Command1(_registerPatient);
   late final updatePatientCommand = Command1(_updatePatient);
 
-  AsyncResult<Patient> _registerPatient(PatientDto patient) {
-    return _patientRepository.createPatient(patient.toEntity());
+  AsyncResult<Patient> _registerPatient(PatientDto patient) async {
+    final result = await _patientRepository.createPatient(patient.toEntity());
+    notifyListeners();
+    return result;
   }
 
   AsyncResult<Patient> _updatePatient(PatientDto patient) {
-    return _patientRepository.updatePatient(patient.toEntity());
+    final result = _patientRepository.updatePatient(patient.toEntity());
+    notifyListeners();
+    return result;
   }
 }

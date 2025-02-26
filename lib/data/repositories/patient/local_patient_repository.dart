@@ -22,12 +22,24 @@ class LocalPatientRepository implements PatientRepository {
     });
   }
 
-  AsyncResult<Unit> checkCpfRgEmail(Patient patient) {
-    return _checkCpf(patient.cpf!).flatMap((_) {
-      return _checkRg(patient.rg!).flatMap((_) {
-        return _checkEmail(patient.email);
-      });
-    });
+  AsyncResult<Unit> checkCpfRgEmail(Patient patient) async {
+    if (patient.cpf == null && patient.rg == null && patient.email.isEmpty) {
+      return Success(unit); // Se todos forem nulos, não precisa verificar
+    }
+
+    AsyncResult<Unit> result = Future.value(Success(unit));
+
+    if (patient.cpf != null) {
+      result = result.flatMap((_) => _checkCpf(patient.cpf!));
+    }
+    if (patient.rg != null) {
+      result = result.flatMap((_) => _checkRg(patient.rg!));
+    }
+    if (patient.email.isNotEmpty) {
+      result = result.flatMap((_) => _checkEmail(patient.email!));
+    }
+
+    return result;
   }
 
   AsyncResult<Unit> _checkCpf(String cpf) {

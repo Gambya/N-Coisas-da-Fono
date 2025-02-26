@@ -276,10 +276,12 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.fingerprint_rounded,
-                      color: Colors.white,
-                    ),
+                    if (_viewModel.patient.cpf != null &&
+                        _viewModel.patient.cpf!.isNotEmpty)
+                      Icon(
+                        Icons.fingerprint_rounded,
+                        color: Colors.white,
+                      ),
                     const SizedBox(width: 5),
                     Text(
                       _viewModel.patient.cpf ?? '',
@@ -301,10 +303,12 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.badge_rounded,
-                      color: Colors.white,
-                    ),
+                    if (_viewModel.patient.rg != null &&
+                        _viewModel.patient.rg!.isNotEmpty)
+                      Icon(
+                        Icons.badge_rounded,
+                        color: Colors.white,
+                      ),
                     const SizedBox(width: 5),
                     Text(
                       _viewModel.patient.rg ?? '',

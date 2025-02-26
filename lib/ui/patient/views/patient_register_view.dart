@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/dtos/patient_dto.dart';
 import 'package:ncoisasdafono/domain/validators/patient_dto_validator.dart';
@@ -31,8 +34,8 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
 
   void _onRegisterPatientCommandChanged() {
     if (_viewModel.registerPatientCommand.isSuccess) {
-      context.go(Routes.home);
-      // Navigator.of(context).pop();
+      // context.go(Routes.home);
+      Navigator.of(context).pop();
     } else if (_viewModel.registerPatientCommand.isFailure) {
       final failure = _viewModel.registerPatientCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -70,17 +73,67 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
             children: [
               Text('Paciente'),
               const SizedBox(height: 40),
-              GestureDetector(
-                onTap: () {},
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey[200],
-                  child: Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.grey[800],
+              Stack(
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      String? image = await _showDialogSelectImage(context);
+                      if (image != null) {
+                        _patient.photoUrl = image;
+                        setState(() {});
+                      }
+                    },
+                    child: _patient.photoUrl != null &&
+                            _patient.photoUrl!.isNotEmpty
+                        ? Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 5.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  Image.file(File(_patient.photoUrl!)).image,
+                            ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 2.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.grey[200],
+                              child: Icon(
+                                Icons.person,
+                                size: 60,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                          ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.photo_camera_rounded,
+                        color: Color.fromARGB(255, 193, 214, 255),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -163,6 +216,19 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
                 listenable: _viewModel.registerPatientCommand,
                 builder: (context, _) {
                   return ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        Color.fromARGB(255, 193, 214, 255),
+                      ),
+                      foregroundColor: WidgetStateProperty.all<Color>(
+                        Colors.white,
+                      ),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
                     onPressed: _viewModel.registerPatientCommand.isRunning
                         ? null
                         : () {
@@ -180,5 +246,70 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
         ),
       ),
     );
+  }
+
+  Future<String?> _showDialogSelectImage(BuildContext context) async {
+    return await showDialog<String?>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Selecione Opções"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(Icons.camera_alt),
+                  title: Text("Câmera"),
+                  onTap: () async {
+                    Navigator.pop(context, await _selectCameraImage(context));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo),
+                  title: Text("Galeria"),
+                  onTap: () async {
+                    Navigator.pop(context, await _selectGalletyImage(context));
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<String?> _selectCameraImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+
+    try {
+      XFile? file = await picker.pickImage(source: ImageSource.camera);
+      if (file != null) {
+        return file.path;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
+    return null;
+  }
+
+  Future<String?> _selectGalletyImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+
+    try {
+      XFile? file = await picker.pickImage(source: ImageSource.gallery);
+      if (file != null) {
+        return file.path;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
+    return null;
   }
 }
