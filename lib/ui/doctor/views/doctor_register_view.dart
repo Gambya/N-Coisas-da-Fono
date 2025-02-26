@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/dtos/doctor_dto.dart';
 import 'package:ncoisasdafono/domain/validators/doctor_dto_validator.dart';
@@ -32,7 +35,6 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
   void _onRegisterDoctorCommandChanged() {
     if (_viewModel.registerDoctorCommand.isSuccess) {
       context.go(Routes.home);
-      // Navigator.of(context).pop();
     } else if (_viewModel.registerDoctorCommand.isFailure) {
       final failure = _viewModel.registerDoctorCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -57,19 +59,69 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Text('Fonoaudiólogo(a)'),
+              Text("Especialista"),
               const SizedBox(height: 40),
-              GestureDetector(
-                onTap: () {},
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey[200],
-                  child: Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.grey[800],
+              Stack(
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      String? image = await _showDialogSelectImage(context);
+                      if (image != null) {
+                        _doctor.photoUrl = image;
+                        setState(() {});
+                      }
+                    },
+                    child:
+                        _doctor.photoUrl != null && _doctor.photoUrl!.isNotEmpty
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 193, 214, 255),
+                                    width: 5.0,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      Image.file(File(_doctor.photoUrl!)).image,
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 193, 214, 255),
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: Colors.grey[200],
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.photo_camera_rounded,
+                        color: Color.fromARGB(255, 193, 214, 255),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -177,5 +229,70 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
         ),
       ),
     );
+  }
+
+  Future<String?> _showDialogSelectImage(BuildContext context) async {
+    return await showDialog<String?>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Selecione Opções"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(Icons.camera_alt),
+                  title: Text("Câmera"),
+                  onTap: () async {
+                    Navigator.pop(context, await _selectCameraImage(context));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo),
+                  title: Text("Galeria"),
+                  onTap: () async {
+                    Navigator.pop(context, await _selectGalletyImage(context));
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<String?> _selectCameraImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+
+    try {
+      XFile? file = await picker.pickImage(source: ImageSource.camera);
+      if (file != null) {
+        return file.path;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
+    return null;
+  }
+
+  Future<String?> _selectGalletyImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+
+    try {
+      XFile? file = await picker.pickImage(source: ImageSource.gallery);
+      if (file != null) {
+        return file.path;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
+    return null;
   }
 }
