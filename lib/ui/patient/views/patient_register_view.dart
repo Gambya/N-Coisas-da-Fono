@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/dtos/patient_dto.dart';
 import 'package:ncoisasdafono/domain/validators/patient_dto_validator.dart';
-import 'package:ncoisasdafono/routing/routes.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.dart';
 import 'package:result_command/result_command.dart';
 
@@ -34,7 +32,6 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
 
   void _onRegisterPatientCommandChanged() {
     if (_viewModel.registerPatientCommand.isSuccess) {
-      // context.go(Routes.home);
       Navigator.of(context).pop();
     } else if (_viewModel.registerPatientCommand.isFailure) {
       final failure = _viewModel.registerPatientCommand.value as FailureCommand;
