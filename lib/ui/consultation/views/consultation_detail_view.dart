@@ -14,6 +14,7 @@ import 'package:ncoisasdafono/ui/consultation/widgets/drop_down_consultation_sta
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
+import 'package:social_sharing_plus/social_sharing_plus.dart';
 
 class ConsultationDetailView extends StatefulWidget {
   final ConsultationWithDoctorAndPatientDto consultation;
@@ -92,9 +93,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
               Icons.share,
               color: Colors.white,
             ),
-            onPressed: () {
-              // Ação a ser executada ao clicar no ícone de menu
-            },
+            onPressed: () => _showShareBottomSheet(context),
           ),
           IconButton(
             icon: Icon(
@@ -724,5 +723,48 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
       }
     }
     return null;
+  }
+
+  void _showShareBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centraliza os ícones
+              children: <Widget>[
+                IconButton(
+                  icon: Image.asset('assets/icons/whatsapp.png',
+                      height: 48, width: 48),
+                  onPressed: () {
+                    _share(SocialPlatform.whatsapp);
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: Image.asset('assets/icons/telegram.png',
+                      height: 48, width: 48),
+                  onPressed: () {
+                    _share(SocialPlatform.telegram);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _share(SocialPlatform platform) async {
+    final dateTime = DateFormat('dd/MM/yyyy hh:mm')
+        .format(_viewModel.consultation!.dateTime);
+    final contentText =
+        'Consulta: $dateTime\nTempo da Consulta: ${_viewModel.consultation!.duration}\nPaciente: ${_viewModel.consultation!.patient.name}\nMédico(a):${_viewModel.consultation!.doctor.name}\nContato:${_viewModel.consultation!.doctor.phone}';
+    await SocialSharingPlus.shareToSocialMedia(platform, contentText);
   }
 }

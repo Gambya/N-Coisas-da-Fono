@@ -8,6 +8,7 @@ import 'package:ncoisasdafono/domain/validators/patient_validator.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_details_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
+import 'package:social_sharing_plus/social_sharing_plus.dart';
 
 class PatientDetailsView extends StatefulWidget {
   final Patient patient;
@@ -77,7 +78,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
               Icons.share,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () => _showShareBottomSheet(context),
           ),
           IconButton(
             icon: Icon(
@@ -608,5 +609,46 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       }
     }
     return null;
+  }
+
+  void _showShareBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centraliza os ícones
+              children: <Widget>[
+                IconButton(
+                  icon: Image.asset('assets/icons/whatsapp.png',
+                      height: 48, width: 48),
+                  onPressed: () {
+                    _share(SocialPlatform.whatsapp);
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: Image.asset('assets/icons/telegram.png',
+                      height: 48, width: 48),
+                  onPressed: () {
+                    _share(SocialPlatform.telegram);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _share(SocialPlatform platform) async {
+    final contentText =
+        'Nome: ${_viewModel.patient.name}\nEmail:${_viewModel.patient.email}\nTelefone:${_viewModel.patient.phone}';
+    await SocialSharingPlus.shareToSocialMedia(platform, contentText);
   }
 }

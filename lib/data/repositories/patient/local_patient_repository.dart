@@ -36,7 +36,7 @@ class LocalPatientRepository implements PatientRepository {
       result = result.flatMap((_) => _checkRg(patient.rg!));
     }
     if (patient.email.isNotEmpty) {
-      result = result.flatMap((_) => _checkEmail(patient.email!));
+      result = result.flatMap((_) => _checkEmail(patient.email));
     }
 
     return result;
