@@ -67,15 +67,6 @@ class _HomeViewState extends State<HomeView> {
               // Ação a ser executada ao clicar no ícone de menu
             },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              // Ação a ser executada ao clicar no ícone de menu
-            },
-          ),
         ],
       ),
       body: Center(

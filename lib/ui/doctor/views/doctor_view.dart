@@ -8,6 +8,7 @@ import 'package:ncoisasdafono/domain/validators/doctor_validator.dart';
 import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
+import 'package:social_sharing_plus/social_sharing_plus.dart';
 
 class DoctorView extends StatefulWidget {
   const DoctorView({super.key});
@@ -310,8 +311,7 @@ class _DoctorViewState extends State<DoctorView> {
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () =>
-                            _showShareDigitalCardBottomSheet(context),
+                        onPressed: () => _showShareBottomSheet(context, doctor),
                       ),
                       ElevatedButton.icon(
                         style: ButtonStyle(
@@ -541,8 +541,45 @@ class _DoctorViewState extends State<DoctorView> {
     );
   }
 
-  Widget _showShareDigitalCardBottomSheet(BuildContext context) {
-    return Text("share");
+  void _showShareBottomSheet(BuildContext context, Doctor doctor) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centraliza os ícones
+              children: <Widget>[
+                IconButton(
+                  icon: Image.asset('assets/icons/whatsapp.png',
+                      height: 48, width: 48),
+                  onPressed: () {
+                    _share(SocialPlatform.whatsapp, doctor);
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: Image.asset('assets/icons/telegram.png',
+                      height: 48, width: 48),
+                  onPressed: () {
+                    _share(SocialPlatform.telegram, doctor);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _share(SocialPlatform platform, Doctor doctor) async {
+    final contentText =
+        '${doctor.specialty} - ${doctor.crfa}\nNome: ${doctor.name}\nEmail:${doctor.email}\nTelefone:${doctor.phone}';
+    await SocialSharingPlus.shareToSocialMedia(platform, contentText);
   }
 
   Future<String?> _showDialogSelectImage(BuildContext context) async {
