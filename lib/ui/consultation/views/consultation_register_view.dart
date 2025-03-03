@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
-import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
+import 'package:ncoisasdafono/domain/validators/consultation_dto_validator.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:result_command/result_command.dart';
@@ -20,7 +20,7 @@ class ConsultationRegisterView extends StatefulWidget {
 
 class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
   late ConsultationRegisterViewModel _viewModel;
-  final ConsultationValidator _validator = ConsultationValidator();
+  final ConsultationDtoValidator _validator = ConsultationDtoValidator();
   final ConsultationDto _consultation = ConsultationDto();
 
   final TextEditingController _dateController = TextEditingController();
