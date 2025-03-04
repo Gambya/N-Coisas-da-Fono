@@ -75,7 +75,6 @@ List<SingleChildWidget> get providers {
     ),
     ChangeNotifierProvider(
       create: (context) => HomeViewModel(
-        context.read<ConsultationRepository>(),
         context.read<DoctorRepository>(),
       ),
     ),
