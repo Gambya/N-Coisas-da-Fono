@@ -616,7 +616,18 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       context: context,
       builder: (BuildContext context) {
         return Wrap(
+          spacing: 8.0,
           children: <Widget>[
+            Center(
+              child: const Text(
+                "Compartilhar",
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: const Divider(),
+            ),
             Row(
               mainAxisAlignment:
                   MainAxisAlignment.center, // Centraliza os ícones

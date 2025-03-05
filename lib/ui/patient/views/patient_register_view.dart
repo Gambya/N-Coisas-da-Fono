@@ -61,6 +61,13 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
           },
         ),
         backgroundColor: Colors.transparent,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0), // Altura da linha
+          child: Container(
+            color: Colors.grey, // Cor da linha
+            height: 1.0, // Espessura da linha
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,8 +75,6 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Text('Paciente'),
-              const SizedBox(height: 40),
               Stack(
                 children: [
                   InkWell(

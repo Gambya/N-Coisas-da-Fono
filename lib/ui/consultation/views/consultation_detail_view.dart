@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
-import 'package:ncoisasdafono/domain/validators/consultation_with_doctor_and_patient_validator.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_detail_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/widgets/drop_down_buttom_from_field_patients.dart';
 import 'package:ncoisasdafono/ui/consultation/widgets/drop_down_consultation_status.dart';
@@ -671,7 +669,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Selecione Opções"),
+            title: Text("Selecione Tipo de Imagem"),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -736,7 +734,18 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
       context: context,
       builder: (BuildContext context) {
         return Wrap(
+          spacing: 8.0,
           children: <Widget>[
+            Center(
+              child: const Text(
+                "Compartilhar",
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: const Divider(),
+            ),
             Row(
               mainAxisAlignment:
                   MainAxisAlignment.center, // Centraliza os ícones

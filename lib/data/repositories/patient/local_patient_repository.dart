@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ncoisasdafono/config/objectbox.g.dart';
+import 'package:ncoisasdafono/data/exceptions/exceptions.dart';
 import 'package:ncoisasdafono/data/repositories/patient/patient_repository.dart';
 import 'package:ncoisasdafono/data/services/patient/local_patient_storage.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
@@ -102,6 +103,14 @@ class LocalPatientRepository implements PatientRepository {
       final result = await getPatients();
       result.onSuccess((patients) => _streamController.add(patients));
     }).pure(patient);
+  }
+
+  @override
+  AsyncResult<List<Patient>> searchPatients(String query) {
+    return _storage
+        .query(Patient_.name.equals(query)) //
+        .onSuccess((patients) => _streamController.add(patients))
+        .onFailure((e) => LocalStorageException("error on search query"));
   }
 
   @override

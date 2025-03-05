@@ -76,9 +76,16 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
           },
         ),
         backgroundColor: Colors.transparent,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0), // Altura da linha
+          child: Container(
+            color: Colors.grey, // Cor da linha
+            height: 1.0, // Espessura da linha
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
