@@ -1,12 +1,12 @@
-import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
+import 'package:intl/intl.dart';
+import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/views/consultation_detail_view.dart';
 import 'package:ncoisasdafono/ui/consultation/views/consultation_register_view.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_view_model.dart';
-import 'package:ncoisasdafono/ui/consultation/widgets/consultation_card.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 
@@ -110,9 +110,8 @@ class _ConsultationViewState extends State<ConsultationView> {
 
   _showConsultations(BuildContext context) {
     return Expanded(
-      child: StreamBuilder<List<ConsultationWithDoctorAndPatientDto>>(
-        stream: _viewModel
-            .consultationStream, //_viewModel.getFilteredConsultations(_searchQuery),
+      child: StreamBuilder<List<Consultation>>(
+        stream: _viewModel.getFilteredConsultations(_searchQuery),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -132,8 +131,7 @@ class _ConsultationViewState extends State<ConsultationView> {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                ConsultationWithDoctorAndPatientDto consultation =
-                    snapshot.data![index];
+                Consultation consultation = snapshot.data![index];
                 return InkWell(
                   onTap: () async {
                     await Navigator.push(
@@ -161,14 +159,7 @@ class _ConsultationViewState extends State<ConsultationView> {
                       ),
                     );
                   },
-                  child: ConsultationCard(
-                    patientName: consultation.patient.name,
-                    photoUrl: consultation.patient.photoUrl,
-                    consultationDate: consultation.dateTime,
-                    consultationTime:
-                        TimeOfDay.fromDateTime(consultation.dateTime),
-                    consultationDuration: int.tryParse(consultation.duration)!,
-                  ),
+                  child: _buildConsultationItem(consultation),
                 );
               },
             );
@@ -260,5 +251,147 @@ class _ConsultationViewState extends State<ConsultationView> {
         },
       ),
     );
+  }
+
+  Widget _buildConsultationItem(Consultation consultation) {
+    return Padding(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+      child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ConsultationDetailView(
+                  consultation: consultation,
+                ),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(0.0, 1.0);
+                  const end = Offset.zero;
+                  const curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end).chain(
+                    CurveTween(curve: curve),
+                  );
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+              ),
+            );
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: [
+                  if (consultation.patient.target!.photoUrl != null &&
+                      consultation.patient.target!.photoUrl!.isNotEmpty)
+                    CircleAvatar(
+                      backgroundImage: Image.file(
+                              File(consultation.patient.target!.photoUrl!))
+                          .image,
+                    )
+                  else
+                    CircleAvatar(
+                      backgroundColor: Color.fromARGB(255, 215, 186, 232),
+                      child: Text(
+                        consultation.patient.target!.name
+                            .substring(0, 2)
+                            .toUpperCase(),
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 193, 214, 255),
+                        ),
+                      ),
+                    ),
+                  SizedBox(width: 10.0),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 200.0,
+                        child: Text(
+                          consultation.patient.target!.name,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'Montserrat',
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.calendar_today,
+                                  color: Colors.grey,
+                                  size: 10,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  DateFormat('dd/MM/yyyy')
+                                      .format(consultation.dateTime!),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.access_time,
+                                  color: Colors.grey,
+                                  size: 10,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _formatTimeOfDay(
+                                    TimeOfDay.fromDateTime(
+                                        consultation.dateTime!),
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios),
+                color: Color.fromARGB(255, 215, 186, 232),
+                onPressed: () {},
+              )
+            ],
+          )),
+    );
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+
+    return '$hour:$minute';
   }
 }

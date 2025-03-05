@@ -15,7 +15,6 @@ class ConsultationDtoValidator extends LucidValidator<ConsultationDto> {
             message: "Data de consulta não pode ser anterior a data atual");
 
     ruleFor((consultation) => consultation.duration, key: 'duration')
-        .isEmpty()
         .mustHaveNumber(message: "A duração deve ser um número em minutos");
 
     ruleFor((consultation) => consultation.value, key: 'value')

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ncoisasdafono/data/exceptions/exceptions.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/consultation_repository.dart';
 import 'package:ncoisasdafono/data/services/consultation/local_consultation_storage.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
@@ -51,6 +52,14 @@ class LocalConsultationRepository implements ConsultationRepository {
       final result = await getConsultations();
       result.onSuccess((consultations) => _streamController.add(consultations));
     }).pure(consultation);
+  }
+
+  @override
+  AsyncResult<List<Consultation>> searchConsultation(String query) {
+    return _storage
+        .query(query) //
+        .onSuccess((consultations) => _streamController.add(consultations))
+        .onFailure((e) => LocalStorageException("error on search query"));
   }
 
   @override

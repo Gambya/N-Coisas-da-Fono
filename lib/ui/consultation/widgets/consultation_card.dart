@@ -55,9 +55,9 @@ class ConsultationCard extends StatelessWidget {
                           child: Text(
                             patientName,
                             style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 14.0,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: Colors.white,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),

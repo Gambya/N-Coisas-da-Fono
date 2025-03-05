@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/consultation_repository.dart';
-import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
-import 'package:ncoisasdafono/domain/usecases/consultation/get_consultations_with_doctor_and_patient.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
 class ConsultationViewModel extends ChangeNotifier {
   final ConsultationRepository _consultationRepository;
-  final GetConsultationsWithDoctorAndPatient _consultationsWithDoctorAndPatient;
-  late Stream<List<ConsultationWithDoctorAndPatientDto>> _consultationStream;
 
-  ConsultationViewModel(
-      this._consultationRepository, this._consultationsWithDoctorAndPatient) {
-    _consultationStream = _consultationsWithDoctorAndPatient.consultationStream;
-  }
+  ConsultationViewModel(this._consultationRepository);
 
-  Stream<List<ConsultationWithDoctorAndPatientDto>> get consultationStream =>
-      _consultationStream;
+  Stream<List<Consultation>> get consultationStream =>
+      _consultationRepository.consultationObserver();
 
   late final loadConsultationCommand = Command0(_loadConsultations);
 
@@ -27,18 +20,20 @@ class ConsultationViewModel extends ChangeNotifier {
     return consultations;
   }
 
-  void getFilteredConsultations(String query) {
+  Stream<List<Consultation>> getFilteredConsultations(String query) {
     debugPrint('getFilteredConsultations called with query: $query');
     if (query.isEmpty) {
       loadConsultationCommand.execute();
+      return consultationStream;
     }
 
-    _consultationStream = _consultationStream.asyncMap((consultations) =>
-        consultations
-            .where((c) =>
-                c.patient.name.toLowerCase().contains(query.toLowerCase()) ||
-                c.title.toLowerCase().contains(query.toLowerCase()) ||
-                c.value.contains(query))
-            .toList());
+    _consultationRepository.searchConsultation(query);
+    return consultationStream;
+  }
+
+  @override
+  void dispose() {
+    _consultationRepository.dispose();
+    super.dispose();
   }
 }

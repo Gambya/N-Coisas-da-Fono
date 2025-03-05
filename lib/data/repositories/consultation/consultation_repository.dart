@@ -7,6 +7,7 @@ abstract interface class ConsultationRepository {
   AsyncResult<Unit> deleteConsultation(int id);
   AsyncResult<List<Consultation>> getConsultations();
   AsyncResult<Consultation> getConsultation(int id);
+  AsyncResult<List<Consultation>> searchConsultation(String query);
   Stream<List<Consultation>> consultationObserver();
   void dispose();
 }

@@ -5,18 +5,13 @@ import 'package:objectbox/objectbox.dart';
 import 'package:result_dart/result_dart.dart';
 
 class LocalDoctorStorage {
-  late final ObjectBoxDatabase _db;
-
-  LocalDoctorStorage(this._db);
-
-  Future<Box> getBox() async {
-    final store = await _db.getStore();
-    return store.box<Doctor>();
+  Future<Box> _getBox() async {
+    return ObjectBoxDatabase.doctorBox;
   }
 
   AsyncResult<Doctor> saveData(Doctor doctor) async {
     try {
-      final box = await getBox();
+      final box = await _getBox();
       await box.putAsync(doctor);
       return Success(doctor);
     } catch (e, s) {
@@ -26,7 +21,7 @@ class LocalDoctorStorage {
 
   AsyncResult<Doctor> getData() async {
     try {
-      final box = await getBox();
+      final box = await _getBox();
       final doctor = await box.getAllAsync();
       return Success(doctor.firstOrNull);
     } catch (e, s) {
@@ -36,7 +31,7 @@ class LocalDoctorStorage {
 
   AsyncResult<Unit> deleteData(int id) async {
     try {
-      final box = await getBox();
+      final box = await _getBox();
       await box.removeAsync(id);
       return Success(unit);
     } catch (e, s) {

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/dtos/consultation_with_doctor_and_patient_dto.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
+import 'package:ncoisasdafono/domain/validators/consultation_validator.dart';
 import 'package:ncoisasdafono/domain/validators/consultation_with_doctor_and_patient_validator.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_detail_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/widgets/drop_down_buttom_from_field_patients.dart';
@@ -17,7 +18,7 @@ import 'package:result_command/result_command.dart';
 import 'package:social_sharing_plus/social_sharing_plus.dart';
 
 class ConsultationDetailView extends StatefulWidget {
-  final ConsultationWithDoctorAndPatientDto consultation;
+  final Consultation consultation;
   const ConsultationDetailView({super.key, required this.consultation});
 
   @override
@@ -26,8 +27,7 @@ class ConsultationDetailView extends StatefulWidget {
 
 class _ConsultationDetailViewState extends State<ConsultationDetailView> {
   late ConsultationDetailViewModel _viewModel;
-  final ConsultationWithDoctorAndPatientValidator _validator =
-      ConsultationWithDoctorAndPatientValidator();
+  final ConsultationValidator _validator = ConsultationValidator();
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
   }
 
   IconData _getStatus() {
-    switch (_viewModel.consultation!.status) {
+    switch (ConsultationStatus.values.byName(_viewModel.consultation!.status)) {
       case ConsultationStatus.agendada:
         return Icons.pending;
       case ConsultationStatus.confirmada:
@@ -143,14 +143,16 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                     onTap: () async {
                       String? image = await _showDialogSelectImage(context);
                       if (image != null) {
-                        _viewModel.consultation!.patient.photoUrl = image;
+                        _viewModel.consultation!.patient.target!.photoUrl =
+                            image;
                         _viewModel.onSaveConsultationCommand.execute();
                         setState(() {});
                       }
                     },
-                    child: _viewModel.consultation!.patient.photoUrl != null &&
-                            _viewModel
-                                .consultation!.patient.photoUrl!.isNotEmpty
+                    child: _viewModel.consultation!.patient.target!.photoUrl !=
+                                null &&
+                            _viewModel.consultation!.patient.target!.photoUrl!
+                                .isNotEmpty
                         ? Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -162,7 +164,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                             child: CircleAvatar(
                               radius: 50,
                               backgroundImage: Image.file(File(_viewModel
-                                      .consultation!.patient.photoUrl!))
+                                      .consultation!.patient.target!.photoUrl!))
                                   .image,
                             ),
                           )
@@ -179,7 +181,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                               backgroundColor:
                                   Color.fromARGB(255, 193, 214, 255),
                               child: Text(
-                                _viewModel.consultation!.patient.name
+                                _viewModel.consultation!.patient.target!.name
                                     .substring(0, 2)
                                     .toUpperCase(),
                                 style: TextStyle(
@@ -225,7 +227,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       const SizedBox(width: 8),
                       Text(
                         DateFormat('dd/MM/yyyy')
-                            .format(_viewModel.consultation!.dateTime),
+                            .format(_viewModel.consultation!.dateTime!),
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white,
@@ -247,7 +249,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       const SizedBox(width: 8),
                       Text(
                         DateFormat('hh:mm')
-                            .format(_viewModel.consultation!.dateTime),
+                            .format(_viewModel.consultation!.dateTime!),
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white,
@@ -298,7 +300,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
               ],
             ),
             ListTile(
-              title: Text(_viewModel.consultation!.patient.name),
+              title: Text(_viewModel.consultation!.patient.target!.name),
               titleTextStyle: TextStyle(
                 fontFamily: 'Montserrat',
                 fontSize: 13.0,
@@ -326,7 +328,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             ),
             ListTile(
               title: Text(
-                _viewModel.consultation!.patient.phone,
+                _viewModel.consultation!.patient.target!.phone,
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 13.0,
@@ -355,7 +357,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
             ),
             ListTile(
               title: Text(
-                _viewModel.consultation!.patient.email,
+                _viewModel.consultation!.patient.target!.email,
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 13.0,
@@ -400,13 +402,13 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
     );
   }
 
-  void _showEditBottomSheetStatus(
-      BuildContext context, ConsultationWithDoctorAndPatientDto obj) {
+  void _showEditBottomSheetStatus(BuildContext context, Consultation obj) {
     showModalBottomSheet(
       showDragHandle: true,
       context: context,
       builder: (BuildContext context) {
-        ConsultationStatus statusSelectioned = obj.status;
+        ConsultationStatus statusSelectioned =
+            ConsultationStatus.values.byName(obj.status);
         return StatefulBuilder(
           builder: (context, setStateBottomSheet) {
             return Container(
@@ -419,7 +421,8 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                     onChanged: (ConsultationStatus? value) {
                       setStateBottomSheet(() {
                         statusSelectioned = value!;
-                        _viewModel.consultation!.status = statusSelectioned;
+                        _viewModel.consultation!.status =
+                            statusSelectioned.name;
                       });
                     },
                   ),
@@ -449,11 +452,11 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setStateBottomSheet) {
-            ConsultationStatus statusSelectioned =
-                _viewModel.consultation!.status;
+            ConsultationStatus statusSelectioned = ConsultationStatus.values
+                .byName(_viewModel.consultation!.status);
             TextEditingController dateController = TextEditingController();
             dateController.text =
-                _formatarDataHora(_viewModel.consultation!.dateTime);
+                _formatarDataHora(_viewModel.consultation!.dateTime!);
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.85,
               child: Padding(
@@ -551,9 +554,11 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue: _viewModel.consultation!.duration,
+                        initialValue:
+                            _viewModel.consultation!.duration.toString(),
                         onChanged: (value) {
-                          _viewModel.consultation!.duration = value;
+                          var valueParse = int.parse(value);
+                          _viewModel.consultation!.duration = valueParse;
                         },
                         keyboardType: TextInputType.number,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -596,7 +601,8 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                         onChanged: (ConsultationStatus? value) {
                           setStateBottomSheet(() {
                             statusSelectioned = value!;
-                            _viewModel.consultation!.status = statusSelectioned;
+                            _viewModel.consultation!.status =
+                                statusSelectioned.name;
                           });
                         },
                       ),
@@ -604,10 +610,10 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
                       DropDownButtomFromFieldPatients(
                         onChanged: (Patient? value) {
                           if (value != null) {
-                            _viewModel.consultation!.patient = value;
+                            _viewModel.consultation!.patient.target = value;
                           }
                         },
-                        initialPatient: _viewModel.consultation!.patient,
+                        initialPatient: _viewModel.consultation!.patient.target,
                       ),
                       const SizedBox(height: 40),
                       ListenableBuilder(
@@ -762,9 +768,9 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
 
   void _share(SocialPlatform platform) async {
     final dateTime = DateFormat('dd/MM/yyyy hh:mm')
-        .format(_viewModel.consultation!.dateTime);
+        .format(_viewModel.consultation!.dateTime!);
     final contentText =
-        'Consulta: $dateTime\nTempo da Consulta: ${_viewModel.consultation!.duration}\nPaciente: ${_viewModel.consultation!.patient.name}\nMédico(a):${_viewModel.consultation!.doctor.name}\nContato:${_viewModel.consultation!.doctor.phone}';
+        'Consulta: $dateTime\nTempo da Consulta: ${_viewModel.consultation!.duration}\nPaciente: ${_viewModel.consultation!.patient.target!.name}\nMédico(a):${_viewModel.consultation!.doctor.target!.name}\nContato:${_viewModel.consultation!.doctor.target!.phone}';
     await SocialSharingPlus.shareToSocialMedia(platform, contentText);
   }
 }

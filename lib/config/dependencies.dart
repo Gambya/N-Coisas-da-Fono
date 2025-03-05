@@ -1,4 +1,3 @@
-import 'package:ncoisasdafono/config/object_box_database.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/consultation_repository.dart';
 import 'package:ncoisasdafono/data/repositories/consultation/local_consultation_repository.dart';
 import 'package:ncoisasdafono/data/repositories/doctor/doctor_repository.dart';
@@ -24,21 +23,14 @@ import 'package:provider/provider.dart';
 
 List<SingleChildWidget> get providers {
   return [
-    Provider<ObjectBoxDatabase>(create: (_) => ObjectBoxDatabase()),
     Provider<LocalDoctorStorage>(
-      create: (context) => LocalDoctorStorage(
-        context.read(),
-      ),
+      create: (_) => LocalDoctorStorage(),
     ),
     Provider<LocalPatientStorage>(
-      create: (context) => LocalPatientStorage(
-        context.read(),
-      ),
+      create: (_) => LocalPatientStorage(),
     ),
     Provider<LocalConsultationStorage>(
-      create: (context) => LocalConsultationStorage(
-        context.read(),
-      ),
+      create: (_) => LocalConsultationStorage(),
     ),
     Provider<DoctorRepository>(
       create: (context) =>
@@ -86,7 +78,6 @@ List<SingleChildWidget> get providers {
     ChangeNotifierProvider(
       create: (context) => ConsultationViewModel(
         context.read<ConsultationRepository>(),
-        context.read<GetConsultationsWithDoctorAndPatient>(),
       ),
     ),
     ChangeNotifierProvider(

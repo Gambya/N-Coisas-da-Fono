@@ -172,10 +172,11 @@ class _PatientViewState extends State<PatientView> {
                         child: Text(
                           patient.name,
                           style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.bold,
-                              overflow: TextOverflow.ellipsis),
+                            fontFamily: 'Montserrat',
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                       Text(

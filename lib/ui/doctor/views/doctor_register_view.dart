@@ -183,7 +183,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
                 validator: _validator.byField(_doctor, 'crfa'),
                 inputFormatters: [
                   MaskTextInputFormatter(
-                      mask: '#-####', filter: {"#": RegExp(r'[0-9]')}),
+                      mask: '#-#####', filter: {"#": RegExp(r'[0-9]')}),
                 ],
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(

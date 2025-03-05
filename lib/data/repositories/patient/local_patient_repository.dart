@@ -100,7 +100,7 @@ class LocalPatientRepository implements PatientRepository {
         .saveData(patient) //
         .onSuccess((_) async {
       final result = await getPatients();
-      result.onSuccess((patients) => _streamController.add);
+      result.onSuccess((patients) => _streamController.add(patients));
     }).pure(patient);
   }
 
