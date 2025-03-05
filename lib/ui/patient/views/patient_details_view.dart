@@ -559,6 +559,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                   leading: Icon(Icons.camera_alt),
                   title: Text("Câmera"),
                   onTap: () async {
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context, await _selectCameraImage(context));
                   },
                 ),
@@ -566,6 +567,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                   leading: Icon(Icons.photo),
                   title: Text("Galeria"),
                   onTap: () async {
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context, await _selectGalletyImage(context));
                   },
                 ),

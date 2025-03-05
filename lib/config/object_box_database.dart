@@ -25,15 +25,11 @@ class ObjectBoxDatabase {
     _store.close();
   }
 
-  /// Retorna o Box<Consultation>
   static Box<Consultation> get consultationBox => _consultationBox;
 
-  /// Retorna o Box<Doctor>
   static Box<Doctor> get doctorBox => _doctorBox;
 
-  /// Retorna o Box<Patient>
   static Box<Patient> get patientBox => _patientBox;
 
-  /// Retorna o Store (se necessário para operações avançadas)
   static Store get store => _store;
 }
