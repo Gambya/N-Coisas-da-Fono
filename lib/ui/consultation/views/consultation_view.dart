@@ -254,137 +254,164 @@ class _ConsultationViewState extends State<ConsultationView> {
   }
 
   Widget _buildConsultationItem(Consultation consultation) {
-    return Padding(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-      child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    ConsultationDetailView(
-                  consultation: consultation,
-                ),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  const begin = Offset(0.0, 1.0);
-                  const end = Offset.zero;
-                  const curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end).chain(
-                    CurveTween(curve: curve),
-                  );
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                children: [
-                  if (consultation.patient.target!.photoUrl != null &&
-                      consultation.patient.target!.photoUrl!.isNotEmpty)
-                    CircleAvatar(
-                      backgroundImage: Image.file(
-                              File(consultation.patient.target!.photoUrl!))
-                          .image,
-                    )
-                  else
-                    CircleAvatar(
-                      backgroundColor: Color.fromARGB(255, 215, 186, 232),
-                      child: Text(
-                        consultation.patient.target!.name
-                            .substring(0, 2)
-                            .toUpperCase(),
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 193, 214, 255),
-                        ),
-                      ),
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+          child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ConsultationDetailView(
+                      consultation: consultation,
                     ),
-                  SizedBox(width: 10.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(0.0, 1.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end).chain(
+                        CurveTween(curve: curve),
+                      );
+
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
                     children: [
-                      SizedBox(
-                        width: 200.0,
-                        child: Text(
-                          consultation.patient.target!.name,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Montserrat',
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.ellipsis,
+                      if (consultation.patient.target!.photoUrl != null &&
+                          consultation.patient.target!.photoUrl!.isNotEmpty)
+                        Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 215, 186, 232),
+                                width: 3.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              backgroundImage: Image.file(File(
+                                      consultation.patient.target!.photoUrl!))
+                                  .image,
+                            ))
+                      else
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color.fromARGB(255, 215, 186, 232),
+                              width: 3.0,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            backgroundColor: Color.fromARGB(255, 215, 186, 232),
+                            child: Text(
+                              consultation.patient.target!.name
+                                  .substring(0, 2)
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      Row(
+                      SizedBox(width: 10.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.calendar_today,
-                                  color: Colors.grey,
-                                  size: 10,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  DateFormat('dd/MM/yyyy')
-                                      .format(consultation.dateTime!),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                          SizedBox(
+                            width: 200.0,
+                            child: Text(
+                              consultation.patient.target!.name,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'Montserrat',
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.access_time,
-                                  color: Colors.grey,
-                                  size: 10,
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.grey,
+                                      size: 10,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      DateFormat('dd/MM/yyyy')
+                                          .format(consultation.dateTime!),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _formatTimeOfDay(
-                                    TimeOfDay.fromDateTime(
-                                        consultation.dateTime!),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                  ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      color: Colors.grey,
+                                      size: 10,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      _formatTimeOfDay(
+                                        TimeOfDay.fromDateTime(
+                                            consultation.dateTime!),
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
+                      )
                     ],
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward_ios),
+                    color: Color.fromARGB(255, 215, 186, 232),
+                    onPressed: () {},
                   )
                 ],
-              ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward_ios),
-                color: Color.fromARGB(255, 215, 186, 232),
-                onPressed: () {},
-              )
-            ],
-          )),
+              )),
+        ),
+        SizedBox(height: 10),
+        Divider(
+          color: Colors.grey[200], // Cor da linha
+          thickness: 1.0, // Espessura da linha
+          height: 0.0, // Altura total (sem espaço extra)
+        ),
+      ],
     );
   }
 

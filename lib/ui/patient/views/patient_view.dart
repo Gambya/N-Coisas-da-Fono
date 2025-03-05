@@ -114,91 +114,119 @@ class _PatientViewState extends State<PatientView> {
   }
 
   Widget _buildPatientItem(Patient patient) {
-    return Padding(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-      child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    PatientDetailsView(
-                  patient: patient,
-                ),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  const begin = Offset(0.0, 1.0);
-                  const end = Offset.zero;
-                  const curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end).chain(
-                    CurveTween(curve: curve),
-                  );
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                children: [
-                  if (patient.photoUrl != null && patient.photoUrl!.isNotEmpty)
-                    CircleAvatar(
-                      backgroundImage:
-                          Image.file(File(patient.photoUrl!)).image,
-                    )
-                  else
-                    CircleAvatar(
-                      backgroundColor: Color.fromARGB(255, 215, 186, 232),
-                      child: Text(
-                        patient.name.substring(0, 2).toUpperCase(),
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 193, 214, 255),
-                        ),
-                      ),
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+          child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        PatientDetailsView(
+                      patient: patient,
                     ),
-                  SizedBox(width: 10.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(0.0, 1.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end).chain(
+                        CurveTween(curve: curve),
+                      );
+
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
                     children: [
-                      SizedBox(
-                        width: 200.0,
-                        child: Text(
-                          patient.name,
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.ellipsis,
+                      if (patient.photoUrl != null &&
+                          patient.photoUrl!.isNotEmpty)
+                        Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 215, 186, 232),
+                                width: 3.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              backgroundImage:
+                                  Image.file(File(patient.photoUrl!)).image,
+                            ))
+                      else
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color.fromARGB(255, 215, 186, 232),
+                              width: 3.0,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            backgroundColor: Color.fromARGB(255, 215, 186, 232),
+                            child: Text(
+                              patient.name.substring(0, 2).toUpperCase(),
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        patient.email,
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      SizedBox(width: 10.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 200.0,
+                            child: Text(
+                              patient.name,
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            patient.email,
+                            style: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 12.0,
+                              color: Colors.grey,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
                       )
                     ],
-                  )
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward_ios),
+                    color: Color.fromARGB(255, 215, 186, 232),
+                    onPressed: () {},
+                  ),
                 ],
-              ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward_ios),
-                color: Color.fromARGB(255, 215, 186, 232),
-                onPressed: () {},
-              )
-            ],
-          )),
+              )),
+        ),
+        SizedBox(height: 10),
+        Divider(
+          color: Colors.grey[200], // Cor da linha
+          thickness: 1.0, // Espessura da linha
+          height: 0.0, // Altura total (sem espaço extra)
+        ),
+      ],
     );
   }
 }
