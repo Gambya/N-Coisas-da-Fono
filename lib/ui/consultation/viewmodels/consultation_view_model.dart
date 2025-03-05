@@ -21,7 +21,6 @@ class ConsultationViewModel extends ChangeNotifier {
   }
 
   Stream<List<Consultation>> getFilteredConsultations(String query) {
-    debugPrint('getFilteredConsultations called with query: $query');
     if (query.isEmpty) {
       loadConsultationCommand.execute();
       return consultationStream;

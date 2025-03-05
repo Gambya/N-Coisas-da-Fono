@@ -199,6 +199,7 @@ class _ConsultationViewState extends State<ConsultationView> {
               setState(() {
                 _searchController.clear();
                 _searchQuery = '';
+                _viewModel.getFilteredConsultations(_searchQuery);
               });
             },
             icon: Icon(Icons.clear),
@@ -209,7 +210,7 @@ class _ConsultationViewState extends State<ConsultationView> {
         ),
         barShape: const WidgetStatePropertyAll<OutlinedBorder>(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
         ),
         constraints: const BoxConstraints(

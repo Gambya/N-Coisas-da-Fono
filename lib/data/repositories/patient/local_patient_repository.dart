@@ -108,7 +108,7 @@ class LocalPatientRepository implements PatientRepository {
   @override
   AsyncResult<List<Patient>> searchPatients(String query) {
     return _storage
-        .query(Patient_.name.equals(query)) //
+        .query(Patient_.name.contains(query)) //
         .onSuccess((patients) => _streamController.add(patients))
         .onFailure((e) => LocalStorageException("error on search query"));
   }
