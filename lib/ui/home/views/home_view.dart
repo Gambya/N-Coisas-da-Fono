@@ -33,7 +33,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
       ConsultationView(isSearching: _isSearching),
-      PatientView(),
+      PatientView(isSearching: _isSearching),
       DoctorView(),
     ];
     return Scaffold(

@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 
 class PatientView extends StatefulWidget {
-  const PatientView({super.key});
+  final bool isSearching;
+  const PatientView({super.key, required this.isSearching});
 
   @override
   State<PatientView> createState() => _PatientViewState();
@@ -18,6 +19,11 @@ class PatientView extends StatefulWidget {
 
 class _PatientViewState extends State<PatientView> {
   late PatientViewModel _viewModel;
+  final SearchController _searchController = SearchController();
+
+  String _searchQuery = '';
+  var _searchHistory = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -37,6 +43,16 @@ class _PatientViewState extends State<PatientView> {
   }
 
   @override
+  void didUpdateWidget(covariant PatientView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isSearching != widget.isSearching) {
+      setState(() {
+        _isSearching = widget.isSearching;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _viewModel.loadPatientsCommand.removeListener(_onLoadPatientCommandChanged);
     super.dispose();
@@ -45,37 +61,11 @@ class _PatientViewState extends State<PatientView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<List<Patient>>(
-        stream: _viewModel.patientsStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 193, 214, 255),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('Erro: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            if (snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text('Nenhuma consulta encontrada.'),
-              );
-            }
-
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                Patient patient = snapshot.data![index];
-                return _buildPatientItem(patient);
-              },
-              itemCount: snapshot.data?.length ?? 0,
-            );
-          } else {
-            return const Center(
-              child: Text('Nenhum paciente encontrado.'),
-            );
-          }
-        },
+      body: Column(
+        children: [
+          if (_isSearching) _showSearchBar(context),
+          _showPatientsItems(),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromARGB(255, 193, 214, 255),
@@ -227,6 +217,124 @@ class _PatientViewState extends State<PatientView> {
           height: 0.0, // Altura total (sem espaço extra)
         ),
       ],
+    );
+  }
+
+  _showSearchBar(BuildContext context) {
+    return Container(
+      color: Color.fromARGB(255, 215, 186, 232),
+      padding: const EdgeInsets.all(8.0),
+      child: SearchAnchor.bar(
+        barHintText: 'Pesquisar...',
+        barElevation: WidgetStatePropertyAll(0.0),
+        searchController: _searchController,
+        viewTrailing: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _searchQuery = _searchController.text;
+                _searchHistory.add(_searchController.text);
+                _searchHistory = _searchHistory.reversed.toSet().toList();
+                _searchController.closeView(_searchController.text);
+                _viewModel.getFilteredPatients(_searchQuery);
+              });
+            },
+            icon: Icon(Icons.search),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _searchController.clear();
+                _searchQuery = '';
+                _viewModel.getFilteredPatients(_searchQuery);
+              });
+            },
+            icon: Icon(Icons.clear),
+          ),
+        ],
+        barPadding: const WidgetStatePropertyAll<EdgeInsets>(
+          EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        ),
+        barShape: const WidgetStatePropertyAll<OutlinedBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+          ),
+        ),
+        constraints: const BoxConstraints(
+          minHeight: 36,
+        ),
+        barBackgroundColor: const WidgetStatePropertyAll<Color>(
+          Color.fromARGB(255, 240, 240, 240),
+        ),
+        barTextStyle: const WidgetStatePropertyAll<TextStyle>(
+          TextStyle(fontSize: 14),
+        ),
+        suggestionsBuilder: (context, controller) {
+          return [
+            Wrap(
+              children: List.generate(
+                _searchHistory.length,
+                (index) {
+                  final item = _searchHistory[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                    child: ChoiceChip(
+                      label: Text(item),
+                      selected: item == _searchController.text,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(24.0)),
+                      ),
+                      onSelected: (value) {
+                        setState(() {
+                          _searchQuery = item;
+                          _searchController.closeView(item);
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ];
+        },
+      ),
+    );
+  }
+
+  _showPatientsItems() {
+    return Expanded(
+      child: StreamBuilder<List<Patient>>(
+        stream: _viewModel.patientsStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 193, 214, 255),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Erro: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text('Nenhuma consulta encontrada.'),
+              );
+            }
+
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                Patient patient = snapshot.data![index];
+                return _buildPatientItem(patient);
+              },
+              itemCount: snapshot.data?.length ?? 0,
+            );
+          } else {
+            return const Center(
+              child: Text('Nenhum paciente encontrado.'),
+            );
+          }
+        },
+      ),
     );
   }
 }

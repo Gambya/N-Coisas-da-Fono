@@ -18,4 +18,20 @@ class PatientViewModel extends ChangeNotifier {
     notifyListeners();
     return patients;
   }
+
+  Stream<List<Patient>> getFilteredPatients(String query) {
+    if (query.isEmpty) {
+      loadPatientsCommand.execute();
+      return patientsStream;
+    }
+
+    _repository.searchPatients(query);
+    return patientsStream;
+  }
+
+  @override
+  void dispose() {
+    _repository.dispose();
+    super.dispose();
+  }
 }
