@@ -1,23 +1,59 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:ncoisasdafono/domain/entities/doctor.dart';
+import 'package:ncoisasdafono/domain/entities/patient.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'consultation.freezed.dart';
-part 'consultation.g.dart';
+@Entity()
+class Consultation {
+  int id;
+  String title;
+  String description;
+  @Property(type: PropertyType.date)
+  DateTime? dateTime;
+  int duration;
+  String value;
+  String status;
 
-@freezed
-sealed class Consultation with _$Consultation {
-  @HiveType(typeId: 0)
-  const factory Consultation({
-    @HiveField(0) required String id,
-    @HiveField(1) required String title,
-    @HiveField(2) required String description,
-    @HiveField(3) required DateTime dateTime,
-    @HiveField(5) required String duration,
-    @HiveField(6) required String status,
-    @HiveField(7) required String patientId,
-    @HiveField(8) required String doctorId,
-  }) = _Consultation;
+  Consultation({
+    this.id = 0,
+    required this.title,
+    required this.description,
+    required this.dateTime,
+    required this.duration,
+    required this.value,
+    required this.status,
+  });
 
-  factory Consultation.fromJson(Map<String, dynamic> json) =>
-      _$ConsultationFromJson(json);
+  final doctor = ToOne<Doctor>();
+  final patient = ToOne<Patient>();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Consultation &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  factory Consultation.fromJson(Map<String, dynamic> json) {
+    Consultation consultations = Consultation(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      dateTime: json['dateTime'],
+      duration: json['duration'],
+      value: json['value'],
+      status: json['status'],
+    );
+    if (json['doctor'] != null) {
+      consultations.doctor.target = Doctor.fromJson(json['doctor']);
+    }
+    if (json['patient'] != null) {
+      consultations.patient.target = Patient.fromJson(json['patient']);
+    }
+    return consultations;
+  }
 }
+
+enum ConsultationStatus { agendada, confirmada, realizada, cancelada }

@@ -1,8 +1,9 @@
-targets:
-  $default:
-    sources:
-      include:
-        - lib/domain/**
-      exclude:
-        - lib/**.freezed.dart
-        - lib/**.g.dart
+# targets:
+#   $default:
+#     sources:
+#       include:
+#         - lib/domain/**
+#         - lib/config/**
+#       exclude:
+#         - lib/**.freezed.dart
+#         - lib/**.g.dart

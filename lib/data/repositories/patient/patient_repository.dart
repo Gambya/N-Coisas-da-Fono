@@ -4,9 +4,10 @@ import 'package:result_dart/result_dart.dart';
 abstract interface class PatientRepository {
   AsyncResult<Patient> createPatient(Patient patient);
   AsyncResult<Patient> updatePatient(Patient patient);
-  AsyncResult<Unit> deletePatient(String id);
+  AsyncResult<Unit> deletePatient(int id);
   AsyncResult<List<Patient>> getPatients();
-  AsyncResult<Patient> getPatient(String id);
-  Stream<Patient> patientObserver();
+  AsyncResult<Patient> getPatient(int id);
+  AsyncResult<List<Patient>> searchPatients(String query);
+  Stream<List<Patient>> patientObserver();
   void dispose();
 }

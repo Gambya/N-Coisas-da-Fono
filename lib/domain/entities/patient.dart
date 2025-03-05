@@ -1,21 +1,50 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:ncoisasdafono/domain/entities/consultation.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'patient.freezed.dart';
-part 'patient.g.dart';
+@Entity()
+class Patient {
+  int id;
+  @Unique()
+  String name;
+  @Unique()
+  String email;
+  String phone;
+  String? photoUrl;
+  @Unique()
+  String? cpf;
+  @Unique()
+  String? rg;
 
-@freezed
-sealed class Patient with _$Patient {
-  @HiveType(typeId: 0)
-  const factory Patient({
-    @HiveField(0) required String id,
-    @HiveField(1) required String name,
-    @HiveField(2) required String email,
-    @HiveField(3) required String phone,
-    @HiveField(4) String? cpf,
-    @HiveField(5) String? rg,
-  }) = _Patient;
+  Patient({
+    this.id = 0,
+    required this.name,
+    required this.email,
+    required this.phone,
+    this.photoUrl,
+    this.cpf,
+    this.rg,
+  });
 
-  factory Patient.fromJson(Map<String, dynamic> json) =>
-      _$PatientFromJson(json);
+  @Backlink('patient')
+  final consultations = ToMany<Consultation>();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Patient && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  factory Patient.fromJson(Map<String, dynamic> json) {
+    return Patient(
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      phone: json['phone'],
+      photoUrl: json['photoUrl'],
+      cpf: json['cpf'],
+      rg: json['rg'],
+    );
+  }
 }
