@@ -12,21 +12,23 @@ class ConsultationViewModel extends ChangeNotifier {
   Stream<List<Consultation>> get consultationStream =>
       _consultationRepository.consultationObserver();
 
-  late final loadConsultationCommand = Command0(_loadConsultations);
+  late final loadConsultationCommand = Command1(_loadConsultations);
 
-  AsyncResult<List<Consultation>> _loadConsultations() async {
-    final consultations = await _consultationRepository.getConsultations();
+  AsyncResult<List<Consultation>> _loadConsultations(DateTime date) async {
+    final consultations =
+        await _consultationRepository.getConsultationsByDate(date);
     notifyListeners();
     return consultations;
   }
 
-  Stream<List<Consultation>> getFilteredConsultations(String query) {
+  Stream<List<Consultation>> getFilteredConsultations(
+      String query, DateTime date) {
     if (query.isEmpty) {
-      loadConsultationCommand.execute();
+      loadConsultationCommand.execute(date);
       return consultationStream;
     }
 
-    _consultationRepository.searchConsultation(query);
+    _consultationRepository.searchConsultation(query, date);
     return consultationStream;
   }
 

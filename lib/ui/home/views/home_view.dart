@@ -37,6 +37,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       DoctorView(),
     ];
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 215, 186, 232),
       appBar: _showAppBar(),
       body: Center(
         child: widgetOptions.elementAt(_selectedIndex),
@@ -46,114 +47,140 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   _showAppBar() {
-    return AppBar(
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder<Doctor>(
-          stream: _viewModel.doctorStream,
-          builder: (BuildContext context, AsyncSnapshot<Doctor> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Color.fromARGB(255, 193, 214, 255),
-                    width: 2.0,
-                  ),
-                ),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey[200],
-                  child: Icon(
-                    Icons.person,
-                    size: 30,
-                    color: Colors.grey[800],
-                  ),
-                ),
-              );
-            } else if (snapshot.hasData) {
-              final doctor = snapshot.data!;
-              if (doctor.photoUrl == null || doctor.photoUrl!.isEmpty) {
-                return Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Color.fromARGB(255, 193, 214, 255),
-                      width: 2.0,
+    return PreferredSize(
+      preferredSize: Size.fromHeight(100.0), // Altura aumentada
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 215, 186, 232),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                // Topo com ícone do usuário e botão de busca
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Ícone do usuário (topo esquerdo)
+                    StreamBuilder<Doctor>(
+                      stream: _viewModel.doctorStream,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Doctor> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 2.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundColor: Colors.grey[200],
+                              child: Icon(
+                                Icons.person,
+                                size: 20,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.hasData) {
+                          final doctor = snapshot.data!;
+                          if (doctor.photoUrl == null ||
+                              doctor.photoUrl!.isEmpty) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Color.fromARGB(255, 193, 214, 255),
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: Text(
+                                  doctor.name.substring(0, 2).toUpperCase(),
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 215, 186, 232),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 2.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              backgroundImage:
+                                  Image.file(File(snapshot.data!.photoUrl!))
+                                      .image,
+                              radius: 20,
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(255, 193, 214, 255),
+                                width: 2.0,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundColor: Colors.grey[200],
+                              child: Icon(
+                                Icons.person,
+                                size: 20,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
-                  ),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Text(
-                      doctor.name.substring(0, 2).toUpperCase(),
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 215, 186, 232),
+                    // Botão de busca (topo direito)
+                    IconButton(
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.white,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _isSearching = !_isSearching;
+                        });
+                      },
                     ),
-                  ),
-                );
-              }
-              return Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Color.fromARGB(255, 193, 214, 255),
-                    width: 2.0,
-                  ),
+                  ],
                 ),
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  backgroundImage:
-                      Image.file(File(snapshot.data!.photoUrl!)).image,
-                  radius: 20,
+                // Título alinhado ao bottom
+                Expanded(
+                  child: Center(
+                      child: Text(
+                    "NCoisas da Fono",
+                    style: GoogleFonts.hennyPenny(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                    ),
+                  )),
                 ),
-              );
-            } else {
-              return Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Color.fromARGB(255, 193, 214, 255),
-                    width: 2.0,
-                  ),
-                ),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey[200],
-                  child: Icon(
-                    Icons.person,
-                    size: 30,
-                    color: Colors.grey[800],
-                  ),
-                ),
-              );
-            }
-          },
-        ),
-      ),
-      title: Text(
-        "NCoisas da Fono",
-        style: GoogleFonts.hennyPenny(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      centerTitle: true,
-      backgroundColor: Color.fromARGB(
-          255, 215, 186, 232), // Color.fromARGB(255, 193, 214, 255),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.search,
-            color: Colors.white,
+                SizedBox(height: 8.0),
+              ],
+            ),
           ),
-          onPressed: () {
-            setState(() {
-              _isSearching = !_isSearching;
-            });
-          },
         ),
-      ],
+      ),
     );
   }
 

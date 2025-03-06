@@ -45,6 +45,13 @@ class LocalConsultationRepository implements ConsultationRepository {
   }
 
   @override
+  AsyncResult<List<Consultation>> getConsultationsByDate(DateTime date) {
+    return _storage
+        .queryByDate(date) //
+        .onSuccess((consultations) => _streamController.add(consultations));
+  }
+
+  @override
   AsyncResult<Consultation> updateConsultation(Consultation consultation) {
     return _storage
         .saveData(consultation) //
@@ -55,9 +62,10 @@ class LocalConsultationRepository implements ConsultationRepository {
   }
 
   @override
-  AsyncResult<List<Consultation>> searchConsultation(String query) {
+  AsyncResult<List<Consultation>> searchConsultation(
+      String query, DateTime date) {
     return _storage
-        .query(query) //
+        .query(query, date) //
         .onSuccess((consultations) => _streamController.add(consultations))
         .onFailure((e) => LocalStorageException("error on search query"));
   }

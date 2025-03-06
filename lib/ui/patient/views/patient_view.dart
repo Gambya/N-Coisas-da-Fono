@@ -61,11 +61,21 @@ class _PatientViewState extends State<PatientView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          if (_isSearching) _showSearchBar(context),
-          _showPatientsItems(),
-        ],
+      backgroundColor: Colors.transparent,
+      body: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0),
+        ),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              if (_isSearching) _showSearchBar(context),
+              _showPatientsItems(),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromARGB(255, 193, 214, 255),

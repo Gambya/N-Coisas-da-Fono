@@ -55,19 +55,25 @@ class LocalConsultationStorage {
     }
   }
 
-  AsyncResult<List<Consultation>> query(String query) async {
+  AsyncResult<List<Consultation>> query(String query, DateTime date) async {
     try {
       final box = await _getBox();
-      QueryBuilder<Consultation> queryBuilder = box.query(
-        Consultation_.title.contains(query, caseSensitive: true) |
-            Consultation_.description.contains(query, caseSensitive: true),
-      ) as QueryBuilder<Consultation>;
+      final startOfDay = DateTime(date.year, date.month, date.day);
+      final endOfDay =
+          startOfDay.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+
+      QueryBuilder<Consultation> queryBuilder = box.query(Consultation_.title
+                  .contains(query, caseSensitive: true) |
+              Consultation_.description.contains(query, caseSensitive: true) &
+                  Consultation_.dateTime.betweenDate(startOfDay, endOfDay))
+          as QueryBuilder<Consultation>;
 
       final queryResult = queryBuilder.build();
       List<Consultation> consultations = await queryResult.findAsync();
       if (consultations.isEmpty) {
         QueryBuilder<Consultation> queryBuilderLinkOne =
-            box.query() as QueryBuilder<Consultation>;
+            box.query(Consultation_.dateTime.betweenDate(startOfDay, endOfDay))
+                as QueryBuilder<Consultation>;
         queryBuilderLinkOne.link(
             Consultation_.patient, Patient_.name.contains(query));
         final queryBuilderLinkOneResult = queryBuilderLinkOne.build();
@@ -78,7 +84,8 @@ class LocalConsultationStorage {
       }
 
       QueryBuilder<Consultation> queryBuilderLink =
-          box.query() as QueryBuilder<Consultation>;
+          box.query(Consultation_.dateTime.betweenDate(startOfDay, endOfDay))
+              as QueryBuilder<Consultation>;
       queryBuilderLink.link(
           Consultation_.patient, Patient_.name.contains(query));
       final queryBuilderLinkResult = queryBuilderLink.build();
@@ -95,6 +102,38 @@ class LocalConsultationStorage {
 
       return Success(allMatches);
     } catch (e, s) {
+      return Failure(LocalStorageException(e.toString(), s));
+    }
+  }
+
+  AsyncResult<List<Consultation>> queryByDate(DateTime date) async {
+    try {
+      final box = await _getBox();
+      final startOfDay = DateTime(date.year, date.month, date.day);
+      final endOfDay =
+          startOfDay.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+
+      QueryBuilder<Consultation> queryBuilder = box.query(
+        Consultation_.dateTime.betweenDate(startOfDay, endOfDay),
+      ) as QueryBuilder<Consultation>;
+
+      final queryResult = queryBuilder.build();
+
+      List<Consultation> consultations = await queryResult.findAsync();
+
+      print(
+          'Query by date returned ${consultations.length} consultations for $date');
+      if (consultations.isEmpty) {
+        print('No consultations found for date: $date');
+      } else {
+        print('Consultations found: $consultations');
+      }
+
+      queryResult.close();
+
+      return Success(consultations);
+    } catch (e, s) {
+      print('Error querying consultations by date: $e, StackTrace: $s');
       return Failure(LocalStorageException(e.toString(), s));
     }
   }
