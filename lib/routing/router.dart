@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRouter {
   late final GoRouter router;
-  bool _isDoctorRegisteredCache = false;
 
   AppRouter() {
     router = GoRouter(
@@ -36,7 +35,6 @@ class AppRouter {
             viewModel: context.read(),
             onDoctorRegistered: () async {
               await _setDoctorRegistered(true);
-              _isDoctorRegisteredCache = true; // Atualiza o cache
             },
           ),
         ),
