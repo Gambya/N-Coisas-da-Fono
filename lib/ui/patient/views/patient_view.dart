@@ -222,9 +222,9 @@ class _PatientViewState extends State<PatientView> {
         ),
         SizedBox(height: 10),
         Divider(
-          color: Colors.grey[200], // Cor da linha
-          thickness: 1.0, // Espessura da linha
-          height: 0.0, // Altura total (sem espaço extra)
+          color: Colors.grey[200],
+          thickness: 1.0,
+          height: 0.0,
         ),
       ],
     );
@@ -232,7 +232,7 @@ class _PatientViewState extends State<PatientView> {
 
   _showSearchBar(BuildContext context) {
     return Container(
-      color: Color.fromARGB(255, 215, 186, 232),
+      color: Colors.transparent,
       padding: const EdgeInsets.all(8.0),
       child: SearchAnchor.bar(
         barHintText: 'Pesquisar...',

@@ -20,8 +20,5 @@ class ConsultationValidator extends LucidValidator<Consultation> {
     ruleFor((consultation) => consultation.value, key: 'value')
         .notEmpty()
         .mustHaveNumber(message: "O valor deve ser um número");
-
-    // ruleFor((consultation) => consultation.patientId, key: 'patient')
-    //     .notEmpty(message: "Paciente tem que ser selecionado");
   }
 }

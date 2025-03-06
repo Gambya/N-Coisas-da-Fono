@@ -631,12 +631,14 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
               child: const Divider(),
             ),
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Centraliza os ícones
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 IconButton(
-                  icon: Image.asset('assets/icons/whatsapp.png',
-                      height: 48, width: 48),
+                  icon: Image.asset(
+                    'assets/icons/whatsapp.png',
+                    height: 48,
+                    width: 48,
+                  ),
                   onPressed: () {
                     _share(SocialPlatform.whatsapp);
                     Navigator.pop(context);
@@ -644,8 +646,11 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                 ),
                 const SizedBox(width: 16),
                 IconButton(
-                  icon: Image.asset('assets/icons/telegram.png',
-                      height: 48, width: 48),
+                  icon: Image.asset(
+                    'assets/icons/telegram.png',
+                    height: 48,
+                    width: 48,
+                  ),
                   onPressed: () {
                     _share(SocialPlatform.telegram);
                     Navigator.pop(context);

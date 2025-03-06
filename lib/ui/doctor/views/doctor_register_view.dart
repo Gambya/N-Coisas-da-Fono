@@ -12,8 +12,10 @@ import 'package:result_command/result_command.dart';
 
 class DoctorRegisterView extends StatefulWidget {
   final DoctorRegisterViewModel viewModel;
+  final Future<void> Function()? onDoctorRegistered;
 
-  const DoctorRegisterView({super.key, required this.viewModel});
+  const DoctorRegisterView(
+      {super.key, required this.viewModel, this.onDoctorRegistered});
 
   @override
   State<DoctorRegisterView> createState() => _DoctorRegisterViewState();
@@ -34,7 +36,14 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
 
   void _onRegisterDoctorCommandChanged() {
     if (_viewModel.registerDoctorCommand.isSuccess) {
-      context.go(Routes.home);
+      if (widget.onDoctorRegistered != null) {
+        widget.onDoctorRegistered!().then((_) {
+          if (!mounted) return;
+          context.go(Routes.home);
+        });
+      } else {
+        context.go(Routes.home);
+      }
     } else if (_viewModel.registerDoctorCommand.isFailure) {
       final failure = _viewModel.registerDoctorCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -54,13 +63,18 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          top: 30.0,
+          bottom: 16.0,
+        ),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
               Text("Especialista"),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               Stack(
                 children: [
                   InkWell(
@@ -213,6 +227,19 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
                 listenable: _viewModel.registerDoctorCommand,
                 builder: (context, _) {
                   return ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        Color.fromARGB(255, 193, 214, 255),
+                      ),
+                      foregroundColor: WidgetStateProperty.all<Color>(
+                        Colors.white,
+                      ),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
                     onPressed: _viewModel.registerDoctorCommand.isRunning
                         ? null
                         : () {

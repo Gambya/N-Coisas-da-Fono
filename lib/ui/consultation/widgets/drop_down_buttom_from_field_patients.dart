@@ -91,8 +91,7 @@ class _DropDownButtomFromFieldPatientsState
             }).toList(),
           );
         } else {
-          return const Text(
-              "No data available"); // Lidar com o caso em que não há dados
+          return const Text("No data available");
         }
       },
     );

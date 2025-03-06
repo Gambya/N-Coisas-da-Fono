@@ -15,9 +15,9 @@ void main() async {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final appRouter = AppRouter();
     return MultiProvider(
       providers: providers,
       child: MaterialApp.router(
@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
-        routerConfig: router(),
+        routerConfig: appRouter.router,
       ),
     );
   }
