@@ -1,0 +1,2 @@
+D:/workspace/ncoisasdafono/android/app/.cxx/RelWithDebInfo/35a36455/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/workspace/ncoisasdafono/android/app/.cxx/RelWithDebInfo/35a36455/armeabi-v7a/CMakeFiles/rebuild_cache.dir

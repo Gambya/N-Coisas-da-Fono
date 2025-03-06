@@ -7,7 +7,6 @@ import 'package:ncoisasdafono/data/repositories/patient/patient_repository.dart'
 import 'package:ncoisasdafono/data/services/consultation/local_consultation_storage.dart';
 import 'package:ncoisasdafono/data/services/doctor/local_doctor_storage.dart';
 import 'package:ncoisasdafono/data/services/patient/local_patient_storage.dart';
-import 'package:ncoisasdafono/domain/usecases/consultation/get_consultations_with_doctor_and_patient.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_detail_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
 import 'package:ncoisasdafono/ui/consultation/widgets/viewmodels/drop_down_buttom_from_field_patients_view_model.dart';
@@ -43,11 +42,6 @@ List<SingleChildWidget> get providers {
     Provider<ConsultationRepository>(
       create: (context) =>
           LocalConsultationRepository(context.read<LocalConsultationStorage>()),
-    ),
-    Provider<GetConsultationsWithDoctorAndPatient>(
-      create: (context) => GetConsultationsWithDoctorAndPatient(
-        context.read<ConsultationRepository>(),
-      ),
     ),
     ChangeNotifierProvider(
       create: (context) =>
