@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_view_model.dart';
@@ -26,6 +26,11 @@ class _ConsultationViewState extends State<ConsultationView> {
   var _searchHistory = [];
   bool _isSearching = false;
 
+  late PageController _pageController;
+  DateTime _currentDate = DateTime.now();
+  static const int initialPageOffset =
+      365; // Permite 1 ano no passado e 1 ano no futuro
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +38,8 @@ class _ConsultationViewState extends State<ConsultationView> {
     _viewModel.loadConsultationCommand
         .addListener(_onLoadConsultationCommandChanged);
 
-    _viewModel.loadConsultationCommand.execute();
+    _viewModel.loadConsultationCommand.execute(DateTime.now());
+    _pageController = PageController(initialPage: initialPageOffset);
   }
 
   void _onLoadConsultationCommandChanged() {
@@ -56,21 +62,78 @@ class _ConsultationViewState extends State<ConsultationView> {
     }
   }
 
+  void _onPageChanged(int index) {
+    setState(() {
+      // Calcula o deslocamento de dias com base no índice
+      int dayOffset = index - initialPageOffset;
+      _currentDate = DateTime.now().add(Duration(days: dayOffset));
+    });
+  }
+
   @override
   void dispose() {
     _viewModel.loadConsultationCommand
         .removeListener(_onLoadConsultationCommandChanged);
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          if (_isSearching) _showSearchBar(context),
-          _showConsultations(context),
-        ],
+      backgroundColor: Colors.transparent,
+      body: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+        child: Container(
+          color: Colors.white,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 10.0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Center(
+                    child: Text(
+                      DateFormat('dd/MM/yyyy').format(_currentDate),
+                      style: GoogleFonts.acme(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 50.0,
+                left: 16.0,
+                right: 16.0,
+                child: Divider(
+                  color: Colors.grey,
+                  thickness: 1.0,
+                  height: 1.0,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 60.0),
+                child: Column(
+                  children: [
+                    if (_isSearching) _showSearchBar(context),
+                    Expanded(
+                      child: _showConsultations(context),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromARGB(255, 193, 214, 255),
@@ -108,74 +171,85 @@ class _ConsultationViewState extends State<ConsultationView> {
     );
   }
 
-  _showConsultations(BuildContext context) {
+  Widget _showConsultations(BuildContext context) {
     return Expanded(
-      child: StreamBuilder<List<Consultation>>(
-        stream: _viewModel.getFilteredConsultations(_searchQuery),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 193, 214, 255),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('Erro: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            if (snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text('Nenhuma consulta encontrada.'),
-              );
-            }
+      child: PageView.builder(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        itemCount: initialPageOffset * 2 +
+            1, // Total de páginas: 1 ano passado + hoje + 1 ano futuro
+        itemBuilder: (context, index) {
+          int dayOffset = index - initialPageOffset;
+          final date = DateTime.now().add(Duration(days: dayOffset));
+          return StreamBuilder<List<Consultation>>(
+            stream: _viewModel.getFilteredConsultations(_searchQuery, date),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 193, 214, 255),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Erro: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                if (snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('Nenhuma consulta encontrada.'),
+                  );
+                }
 
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                Consultation consultation = snapshot.data![index];
-                return InkWell(
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            ConsultationDetailView(
-                          consultation: consultation,
-                        ),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(0.0, 1.0);
-                          const end = Offset.zero;
-                          const curve = Curves.ease;
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    Consultation consultation = snapshot.data![index];
+                    return InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    ConsultationDetailView(
+                              consultation: consultation,
+                            ),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              const curve = Curves.ease;
 
-                          var tween = Tween(begin: begin, end: end).chain(
-                            CurveTween(curve: curve),
-                          );
+                              var tween = Tween(begin: begin, end: end).chain(
+                                CurveTween(curve: curve),
+                              );
 
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                      ),
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: _buildConsultationItem(consultation),
                     );
                   },
-                  child: _buildConsultationItem(consultation),
                 );
-              },
-            );
-          } else {
-            return const Center(
-              child: Text('Nenhuma consulta disponível para esta data.'),
-            );
-          }
+              } else {
+                return const Center(
+                  child: Text('Nenhuma consulta disponível para esta data.'),
+                );
+              }
+            },
+          );
         },
       ),
     );
   }
 
-  _showSearchBar(BuildContext context) {
+  Widget _showSearchBar(BuildContext context) {
     return Container(
-      color: Color.fromARGB(255, 215, 186, 232),
+      color: Colors.transparent,
       padding: const EdgeInsets.all(8.0),
       child: SearchAnchor.bar(
         barHintText: 'Pesquisar...',
@@ -189,7 +263,7 @@ class _ConsultationViewState extends State<ConsultationView> {
                 _searchHistory.add(_searchController.text);
                 _searchHistory = _searchHistory.reversed.toSet().toList();
                 _searchController.closeView(_searchController.text);
-                _viewModel.getFilteredConsultations(_searchQuery);
+                _viewModel.getFilteredConsultations(_searchQuery, _currentDate);
               });
             },
             icon: Icon(Icons.search),
@@ -199,7 +273,7 @@ class _ConsultationViewState extends State<ConsultationView> {
               setState(() {
                 _searchController.clear();
                 _searchQuery = '';
-                _viewModel.getFilteredConsultations(_searchQuery);
+                _viewModel.getFilteredConsultations(_searchQuery, _currentDate);
               });
             },
             icon: Icon(Icons.clear),
@@ -408,9 +482,9 @@ class _ConsultationViewState extends State<ConsultationView> {
         ),
         SizedBox(height: 10),
         Divider(
-          color: Colors.grey[200], // Cor da linha
-          thickness: 1.0, // Espessura da linha
-          height: 0.0, // Altura total (sem espaço extra)
+          color: Colors.grey[200],
+          thickness: 1.0,
+          height: 0.0,
         ),
       ],
     );
