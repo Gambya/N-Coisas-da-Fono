@@ -25,7 +25,7 @@ class LocalPatientRepository implements PatientRepository {
 
   AsyncResult<Unit> checkCpfRgEmail(Patient patient) async {
     if (patient.cpf == null && patient.rg == null && patient.email.isEmpty) {
-      return Success(unit); // Se todos forem nulos, não precisa verificar
+      return Success(unit);
     }
 
     AsyncResult<Unit> result = Future.value(Success(unit));

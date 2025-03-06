@@ -28,8 +28,7 @@ class _ConsultationViewState extends State<ConsultationView> {
 
   late PageController _pageController;
   DateTime _currentDate = DateTime.now();
-  static const int initialPageOffset =
-      365; // Permite 1 ano no passado e 1 ano no futuro
+  static const int initialPageOffset = 365;
 
   @override
   void initState() {
@@ -64,7 +63,6 @@ class _ConsultationViewState extends State<ConsultationView> {
 
   void _onPageChanged(int index) {
     setState(() {
-      // Calcula o deslocamento de dias com base no índice
       int dayOffset = index - initialPageOffset;
       _currentDate = DateTime.now().add(Duration(days: dayOffset));
     });
@@ -176,8 +174,7 @@ class _ConsultationViewState extends State<ConsultationView> {
       child: PageView.builder(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        itemCount: initialPageOffset * 2 +
-            1, // Total de páginas: 1 ano passado + hoje + 1 ano futuro
+        itemCount: initialPageOffset * 2 + 1,
         itemBuilder: (context, index) {
           int dayOffset = index - initialPageOffset;
           final date = DateTime.now().add(Duration(days: dayOffset));

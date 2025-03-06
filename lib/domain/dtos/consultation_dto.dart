@@ -10,8 +10,6 @@ class ConsultationDto {
   String duration;
   String value;
   ConsultationStatus status;
-  // int? patientId;
-  // int? doctorId;
   Patient? patient;
   Doctor? doctor;
 
@@ -24,8 +22,6 @@ class ConsultationDto {
     this.status = ConsultationStatus.agendada,
     this.patient,
     this.doctor,
-    // this.patientId,
-    // this.doctorId,
   }) {
     dateTime = DateTime.now();
   }

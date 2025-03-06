@@ -35,11 +35,7 @@ class _DropDownConsultationStatusState
         items: ConsultationStatus.values.map((ConsultationStatus status) {
           return DropdownMenuItem<ConsultationStatus>(
             value: status,
-            child: Text(status
-                .toString()
-                .toUpperCase()
-                .split('.')
-                .last), // Exibe o nome do Enum
+            child: Text(status.toString().toUpperCase().split('.').last),
           );
         }).toList(),
       ),

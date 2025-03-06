@@ -145,8 +145,7 @@ class ConsultationCard extends StatelessWidget {
   String _formatTimeOfDay(TimeOfDay time) {
     final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
-    const second =
-        '00'; // Como TimeOfDay não tem segundos, você pode definir como '00' ou algum valor fixo
+    const second = '00';
 
     return '$hour:$minute:$second';
   }

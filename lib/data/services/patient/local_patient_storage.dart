@@ -57,7 +57,6 @@ class LocalPatientStorage {
       final box = await _getBox();
       final queryResult = await box.query(query).build().findAsync();
       final result = queryResult as List<Patient>;
-      // _convertList(queryResult);
       return Success(result);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));

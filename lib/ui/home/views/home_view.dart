@@ -48,7 +48,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   _showAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(100.0), // Altura aumentada
+      preferredSize: Size.fromHeight(100.0),
       child: Container(
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 215, 186, 232),
@@ -58,12 +58,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               children: [
-                // Topo com ícone do usuário e botão de busca
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Ícone do usuário (topo esquerdo)
                     StreamBuilder<Doctor>(
                       stream: _viewModel.doctorStream,
                       builder: (BuildContext context,
@@ -149,7 +147,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         }
                       },
                     ),
-                    // Botão de busca (topo direito)
                     IconButton(
                       icon: Icon(
                         Icons.search,
@@ -163,7 +160,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                // Título alinhado ao bottom
                 Expanded(
                   child: Center(
                       child: Text(

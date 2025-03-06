@@ -54,6 +54,7 @@ dependencies:
   flutter_vector_icons: ^2.0.0
   social_sharing_plus: ^1.2.3
   google_fonts: ^6.2.1
+  shared_preferences: ^2.5.2
 
 dev_dependencies:
   flutter_test:

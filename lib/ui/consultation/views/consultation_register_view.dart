@@ -77,10 +77,10 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
         ),
         backgroundColor: Colors.transparent,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // Altura da linha
+          preferredSize: Size.fromHeight(1.0),
           child: Container(
-            color: Colors.grey, // Cor da linha
-            height: 1.0, // Espessura da linha
+            color: Colors.grey,
+            height: 1.0,
           ),
         ),
       ),
@@ -219,7 +219,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                   isExpanded: true,
                   isDense: true,
                   focusColor: Colors.white,
-                  value: _statusSelecionado, // Valor selecionado
+                  value: _statusSelecionado,
                   onChanged: (ConsultationStatus? newValue) {
                     setState(() {
                       _statusSelecionado = newValue!;
@@ -230,11 +230,9 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                       .map((ConsultationStatus status) {
                     return DropdownMenuItem<ConsultationStatus>(
                       value: status,
-                      child: Text(status
-                          .toString()
-                          .toUpperCase()
-                          .split('.')
-                          .last), // Exibe o nome do Enum
+                      child: Text(
+                        status.toString().toUpperCase().split('.').last,
+                      ),
                     );
                   }).toList(),
                 ),
@@ -244,7 +242,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                 stream: _viewModel.patientsStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Ou outro indicador de carregamento
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Erro: ${snapshot.error}');
                   } else if (snapshot.hasData) {
@@ -279,8 +277,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
                       }).toList(),
                     );
                   } else {
-                    return const Text(
-                        "No data available"); // Lidar com o caso em que não há dados
+                    return const Text("No data available");
                   }
                 },
               ),

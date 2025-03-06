@@ -62,10 +62,10 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
         ),
         backgroundColor: Colors.transparent,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // Altura da linha
+          preferredSize: Size.fromHeight(1.0),
           child: Container(
-            color: Colors.grey, // Cor da linha
-            height: 1.0, // Espessura da linha
+            color: Colors.grey,
+            height: 1.0,
           ),
         ),
       ),
