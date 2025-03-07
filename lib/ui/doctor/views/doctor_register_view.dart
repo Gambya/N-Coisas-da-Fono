@@ -170,6 +170,18 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
               const SizedBox(height: 20),
               TextFormField(
                 onChanged: (value) {
+                  _doctor.specialty = value;
+                },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  labelText: 'Especialidade',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                onChanged: (value) {
                   _doctor.phone = value;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
