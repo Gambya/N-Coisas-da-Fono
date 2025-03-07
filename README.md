@@ -49,10 +49,10 @@ Para executar o aplicativo localmente a partir do código-fonte usando Flutter, 
 
 2. **Clone o Repositório**:
    - Abra um terminal e execute o seguinte comando para clonar o repositório:
-     ```bash
-     git clone https://github.com/Gambya/NCoisas da Fono.git
-     ```
-    - Navegue até o diretório do projeto:
+    ```bash
+    git clone https://github.com/Gambya/NCoisas da Fono.git
+    ```
+   - Navegue até o diretório do projeto:
     ```bash
     cd NCoisas da Fono
     ```

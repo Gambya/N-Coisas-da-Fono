@@ -6,6 +6,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
 import 'package:ncoisasdafono/domain/validators/doctor_validator.dart';
 import 'package:ncoisasdafono/ui/doctor/viewmodels/doctor_view_model.dart';
+import 'package:ncoisasdafono/ui/doctor/widgets/shimmer_loading_doctor_view.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 import 'package:social_sharing_plus/social_sharing_plus.dart';
@@ -68,11 +69,7 @@ class _DoctorViewState extends State<DoctorView> {
       stream: _viewModel.doctorsStream,
       builder: (BuildContext context, AsyncSnapshot<Doctor> snapshot) {
         if (_viewModel.loadDoctorsCommand.isRunning) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: Color.fromARGB(255, 193, 214, 255),
-            ),
-          );
+          return ShimmerLoadingDoctorView();
         } else if (_viewModel.loadDoctorsCommand.isFailure) {
           final failure = _viewModel.loadDoctorsCommand.value as FailureCommand;
           return SnackBar(
