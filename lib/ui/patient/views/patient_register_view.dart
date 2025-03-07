@@ -256,6 +256,9 @@ class _PatientRegisterViewState extends State<PatientRegisterView> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
             title: Text("Selecione Opções"),
             content: Column(
               mainAxisSize: MainAxisSize.min,

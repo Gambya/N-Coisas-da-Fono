@@ -598,6 +598,9 @@ class _DoctorViewState extends State<DoctorView> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
             title: Text("Selecione Opções"),
             content: Column(
               mainAxisSize: MainAxisSize.min,
