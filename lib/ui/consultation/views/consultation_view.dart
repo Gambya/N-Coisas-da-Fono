@@ -7,6 +7,7 @@ import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_register_v
 import 'package:ncoisasdafono/ui/consultation/views/consultation_detail_view.dart';
 import 'package:ncoisasdafono/ui/consultation/views/consultation_register_view.dart';
 import 'package:ncoisasdafono/ui/consultation/viewmodels/consultation_view_model.dart';
+import 'package:ncoisasdafono/ui/consultation/widgets/shimmer_loading_consultation_view.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 
@@ -182,11 +183,7 @@ class _ConsultationViewState extends State<ConsultationView> {
             stream: _viewModel.getFilteredConsultations(_searchQuery, date),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    color: Color.fromARGB(255, 193, 214, 255),
-                  ),
-                );
+                return ShimmerLoadingConsultationView();
               } else if (snapshot.hasError) {
                 return Text('Erro: ${snapshot.error}');
               } else if (snapshot.hasData) {

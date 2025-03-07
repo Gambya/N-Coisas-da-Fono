@@ -6,6 +6,7 @@ import 'package:ncoisasdafono/ui/patient/viewmodels/patient_register_view_model.
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/views/patient_details_view.dart';
 import 'package:ncoisasdafono/ui/patient/views/patient_register_view.dart';
+import 'package:ncoisasdafono/ui/patient/widgets/shimmer_loading_patient_view.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 
@@ -317,11 +318,7 @@ class _PatientViewState extends State<PatientView> {
         stream: _viewModel.patientsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 193, 214, 255),
-              ),
-            );
+            return ShimmerLoadingPatientView();
           } else if (snapshot.hasError) {
             return Text('Erro: ${snapshot.error}');
           } else if (snapshot.hasData) {
