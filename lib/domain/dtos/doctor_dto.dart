@@ -17,7 +17,7 @@ class DoctorDto {
     this.photoUrl,
     this.phone = "",
     this.crfa = "",
-    this.specialty = "Fonoaudióloga",
+    this.specialty = "",
     this.address = "",
   });
 
