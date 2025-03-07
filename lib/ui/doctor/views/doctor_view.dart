@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
@@ -629,7 +630,10 @@ class _DoctorViewState extends State<DoctorView> {
     try {
       XFile? file = await picker.pickImage(source: ImageSource.camera);
       if (file != null) {
-        return file.path;
+        final fileCropped = await _crop(file: file);
+        if (fileCropped != null) {
+          return fileCropped.path;
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -647,7 +651,10 @@ class _DoctorViewState extends State<DoctorView> {
     try {
       XFile? file = await picker.pickImage(source: ImageSource.gallery);
       if (file != null) {
-        return file.path;
+        final fileCropped = await _crop(file: file);
+        if (fileCropped != null) {
+          return fileCropped.path;
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -657,5 +664,18 @@ class _DoctorViewState extends State<DoctorView> {
       }
     }
     return null;
+  }
+
+  Future<CroppedFile?> _crop({required XFile file}) async {
+    final imageCropper = ImageCropper();
+    return await imageCropper.cropImage(sourcePath: file.path, uiSettings: [
+      AndroidUiSettings(
+        toolbarTitle: 'Imagem',
+        toolbarColor: Color.fromARGB(255, 215, 186, 232),
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.original,
+        lockAspectRatio: false,
+      ),
+    ]);
   }
 }
