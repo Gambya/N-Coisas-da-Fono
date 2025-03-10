@@ -704,7 +704,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
         return file.path;
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -722,7 +722,7 @@ class _ConsultationDetailViewState extends State<ConsultationDetailView> {
         return file.path;
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));

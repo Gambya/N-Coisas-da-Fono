@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:ncoisasdafono/domain/entities/annotation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/patient_validator.dart';
+import 'package:ncoisasdafono/ui/patient/viewmodels/annotation_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_details_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/views/annotation_view.dart';
+import 'package:ncoisasdafono/ui/patient/widgets/annotation_card.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 import 'package:social_sharing_plus/social_sharing_plus.dart';
@@ -29,6 +33,18 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     _viewModel = context.read<PatientDetailsViewModel>();
     _viewModel.patient = widget.patient;
     _viewModel.onSavePatientCommand.addListener(_onSave);
+    _viewModel.onLoadAnnotationCommand.addListener(_onLoadAnnotations);
+    _viewModel.onLoadAnnotationCommand.execute(_viewModel.patient.id);
+  }
+
+  void _onLoadAnnotations() {
+    if (_viewModel.onLoadAnnotationCommand.isFailure) {
+      final failure =
+          _viewModel.onLoadAnnotationCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(failure.error.toString()),
+      ));
+    }
   }
 
   void _onSave() {
@@ -43,6 +59,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
   @override
   void dispose() {
     _viewModel.onSavePatientCommand.removeListener(_onSave);
+    _viewModel.onLoadAnnotationCommand.removeListener(_onLoadAnnotations);
     super.dispose();
   }
 
@@ -348,17 +365,18 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     Icons.post_add_rounded,
                     color: Colors.white,
                   ),
-                  onPressed: () => _addAnotation(context),
+                  onPressed: () => _addAnotation(_viewModel.patient),
                 ),
               ],
             ),
+            _showAnnotations(context),
           ],
         ),
       ),
     );
   }
 
-  void _showEditBottomSheet(BuildContext context) {
+  _showEditBottomSheet(BuildContext context) {
     showModalBottomSheet(
       showDragHandle: true,
       isScrollControlled: true,
@@ -543,14 +561,36 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     return Center(child: Text('Phone call'));
   }
 
-  Widget _addAnotation(BuildContext context) {
-    return Center(child: Text('Add anotation'));
+  _addAnotation(Patient patient) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => AnnotationView(
+          viewModel: context.read<AnnotationViewModel>(),
+          patient: patient,
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   Future<String?> _showDialogSelectImage(BuildContext context) async {
     return await showDialog<String?>(
         context: context,
-        builder: (context) {
+        builder: (dialogContext) {
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -563,16 +603,20 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                   leading: Icon(Icons.camera_alt),
                   title: Text("Câmera"),
                   onTap: () async {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context, await _selectCameraImage(context));
+                    final result = await _selectCameraImage(dialogContext);
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext, result);
+                    }
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.photo),
                   title: Text("Galeria"),
                   onTap: () async {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context, await _selectGalletyImage(context));
+                    final result = await _selectGalletyImage(dialogContext);
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext, result);
+                    }
                   },
                 ),
               ],
@@ -593,7 +637,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -614,7 +658,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -629,6 +673,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       AndroidUiSettings(
         toolbarTitle: 'Imagem',
         toolbarColor: Color.fromARGB(255, 215, 186, 232),
+        activeControlsWidgetColor: Color.fromARGB(255, 215, 186, 232),
         toolbarWidgetColor: Colors.white,
         initAspectRatio: CropAspectRatioPreset.original,
         lockAspectRatio: false,
@@ -636,7 +681,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     ]);
   }
 
-  void _showShareBottomSheet(BuildContext context) {
+  _showShareBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -687,9 +732,79 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
   }
 
-  void _share(SocialPlatform platform) async {
+  _share(SocialPlatform platform) async {
     final contentText =
         'Nome: ${_viewModel.patient.name}\nEmail:${_viewModel.patient.email}\nTelefone:${_viewModel.patient.phone}';
     await SocialSharingPlus.shareToSocialMedia(platform, contentText);
+  }
+
+  Widget _showAnnotations(BuildContext context) {
+    return SingleChildScrollView(
+      child: StreamBuilder<List<Annotation>>(
+          stream: _viewModel.annotations,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 193, 214, 255),
+              ));
+            } else if (snapshot.hasError) {
+              return Text('Erro: ${snapshot.error}');
+            } else if (snapshot.hasData) {
+              if (snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text('Nenhuma anotação encontrada.'),
+                );
+              }
+
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  Annotation annotation = snapshot.data![index];
+                  return AnnotationCard(
+                    text: annotation.text,
+                    files: annotation.documents.toList(),
+                    onDeleteFile: (index) {},
+                    onEditPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  AnnotationView(
+                            viewModel: context.read<AnnotationViewModel>(),
+                            patient: annotation.patient.target!,
+                            annotation: annotation,
+                          ),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(0.0, 1.0);
+                            const end = Offset.zero;
+                            const curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end).chain(
+                              CurveTween(curve: curve),
+                            );
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+                itemCount: snapshot.data?.length ?? 0,
+              );
+            } else {
+              return const Center(
+                child: Text('Nenhuma anotação encontrado.'),
+              );
+            }
+          }),
+    );
   }
 }

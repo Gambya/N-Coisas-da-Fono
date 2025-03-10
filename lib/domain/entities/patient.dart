@@ -1,3 +1,4 @@
+import 'package:ncoisasdafono/domain/entities/annotation.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:objectbox/objectbox.dart';
 
@@ -24,6 +25,8 @@ class Patient {
     this.cpf,
     this.rg,
   });
+
+  final annotations = ToMany<Annotation>();
 
   @Backlink('patient')
   final consultations = ToMany<Consultation>();
