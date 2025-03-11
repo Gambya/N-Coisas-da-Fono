@@ -49,7 +49,7 @@ class DocumentViewerScreen extends StatelessWidget {
                   return Center(child: Text('Erro ao abrir PDF: $error'));
                 },
               );
-            case 'png':
+            case 'png' || 'jpg' || 'jpeg':
               return Center(
                 child: Image.memory(
                   bytes,

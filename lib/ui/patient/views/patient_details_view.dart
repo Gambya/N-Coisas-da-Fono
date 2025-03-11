@@ -776,7 +776,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                   return AnnotationCard(
                     text: annotation.text,
                     files: annotation.documents.toList(),
-                    onDeleteFile: (int fileIndex) async {
+                    onDeleteFile: (fileIndex) async {
                       final document = annotation.documents[fileIndex];
                       _viewModel.onRemoveFileCommand.execute(document);
                       setState(() {
