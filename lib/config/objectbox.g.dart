@@ -14,8 +14,10 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
+import '../domain/entities/annotation.dart';
 import '../domain/entities/consultation.dart';
 import '../domain/entities/doctor.dart';
+import '../domain/entities/document.dart';
 import '../domain/entities/patient.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
@@ -179,13 +181,85 @@ final _entities = <obx_int.ModelEntity>[
             type: 9,
             flags: 0)
       ],
-      relations: <obx_int.ModelRelation>[],
+      relations: <obx_int.ModelRelation>[
+        obx_int.ModelRelation(
+            id: const obx_int.IdUid(2, 6181149915685481576),
+            name: 'annotations',
+            targetId: const obx_int.IdUid(4, 3097366409491271828))
+      ],
       backlinks: <obx_int.ModelBacklink>[
         obx_int.ModelBacklink(
             name: 'consultations',
             srcEntity: 'Consultation',
             srcField: 'patient')
-      ])
+      ]),
+  obx_int.ModelEntity(
+      id: const obx_int.IdUid(4, 3097366409491271828),
+      name: 'Annotation',
+      lastPropertyId: const obx_int.IdUid(4, 5001342545866670785),
+      flags: 0,
+      properties: <obx_int.ModelProperty>[
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(1, 680533773120012523),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(2, 8846827651470924071),
+            name: 'text',
+            type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(3, 4011316444242635022),
+            name: 'createdAt',
+            type: 10,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(4, 5001342545866670785),
+            name: 'patientId',
+            type: 11,
+            flags: 520,
+            indexId: const obx_int.IdUid(9, 3951663070511930001),
+            relationTarget: 'Patient')
+      ],
+      relations: <obx_int.ModelRelation>[
+        obx_int.ModelRelation(
+            id: const obx_int.IdUid(1, 3931668597836579698),
+            name: 'documents',
+            targetId: const obx_int.IdUid(5, 2183886181836851805))
+      ],
+      backlinks: <obx_int.ModelBacklink>[]),
+  obx_int.ModelEntity(
+      id: const obx_int.IdUid(5, 2183886181836851805),
+      name: 'Document',
+      lastPropertyId: const obx_int.IdUid(4, 957183089741635419),
+      flags: 0,
+      properties: <obx_int.ModelProperty>[
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(1, 3197499952919875436),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(2, 8382180535830734811),
+            name: 'bytes',
+            type: 23,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(3, 3010788601427637539),
+            name: 'annotationId',
+            type: 11,
+            flags: 520,
+            indexId: const obx_int.IdUid(10, 4759235638833371495),
+            relationTarget: 'Annotation'),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(4, 957183089741635419),
+            name: 'fileName',
+            type: 9,
+            flags: 0)
+      ],
+      relations: <obx_int.ModelRelation>[],
+      backlinks: <obx_int.ModelBacklink>[])
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -223,9 +297,9 @@ Future<obx.Store> openStore(
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
-      lastEntityId: const obx_int.IdUid(3, 5894913375927753702),
-      lastIndexId: const obx_int.IdUid(8, 8196349327755732588),
-      lastRelationId: const obx_int.IdUid(0, 0),
+      lastEntityId: const obx_int.IdUid(5, 2183886181836851805),
+      lastIndexId: const obx_int.IdUid(10, 4759235638833371495),
+      lastRelationId: const obx_int.IdUid(2, 6181149915685481576),
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],
       retiredIndexUids: const [904994285721374892, 8647010289486896385],
@@ -373,6 +447,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         model: _entities[2],
         toOneRelations: (Patient object) => [],
         toManyRelations: (Patient object) => {
+              obx_int.RelInfo<Patient>.toMany(2, object.id): object.annotations,
               obx_int.RelInfo<Consultation>.toOneBacklink(8, object.id,
                       (Consultation srcObject) => srcObject.patient):
                   object.consultations
@@ -428,11 +503,86 @@ obx_int.ModelDefinition getObjectBoxModel() {
               photoUrl: photoUrlParam,
               cpf: cpfParam,
               rg: rgParam);
+          obx_int.InternalToManyAccess.setRelInfo<Patient>(object.annotations,
+              store, obx_int.RelInfo<Patient>.toMany(2, object.id));
           obx_int.InternalToManyAccess.setRelInfo<Patient>(
               object.consultations,
               store,
               obx_int.RelInfo<Consultation>.toOneBacklink(
                   8, object.id, (Consultation srcObject) => srcObject.patient));
+          return object;
+        }),
+    Annotation: obx_int.EntityDefinition<Annotation>(
+        model: _entities[3],
+        toOneRelations: (Annotation object) => [object.patient],
+        toManyRelations: (Annotation object) => {
+              obx_int.RelInfo<Annotation>.toMany(1, object.id): object.documents
+            },
+        getId: (Annotation object) => object.id,
+        setId: (Annotation object, int id) {
+          object.id = id;
+        },
+        objectToFB: (Annotation object, fb.Builder fbb) {
+          final textOffset = fbb.writeString(object.text);
+          fbb.startTable(5);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, textOffset);
+          fbb.addInt64(2, object.createdAt.millisecondsSinceEpoch);
+          fbb.addInt64(3, object.patient.targetId);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (obx.Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final textParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 6, '');
+          final object = Annotation(id: idParam, text: textParam)
+            ..createdAt = DateTime.fromMillisecondsSinceEpoch(
+                const fb.Int64Reader().vTableGet(buffer, rootOffset, 8, 0));
+          object.patient.targetId =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0);
+          object.patient.attach(store);
+          obx_int.InternalToManyAccess.setRelInfo<Annotation>(object.documents,
+              store, obx_int.RelInfo<Annotation>.toMany(1, object.id));
+          return object;
+        }),
+    Document: obx_int.EntityDefinition<Document>(
+        model: _entities[4],
+        toOneRelations: (Document object) => [object.annotation],
+        toManyRelations: (Document object) => {},
+        getId: (Document object) => object.id,
+        setId: (Document object, int id) {
+          object.id = id;
+        },
+        objectToFB: (Document object, fb.Builder fbb) {
+          final bytesOffset =
+              object.bytes == null ? null : fbb.writeListInt8(object.bytes!);
+          final fileNameOffset = fbb.writeString(object.fileName);
+          fbb.startTable(5);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, bytesOffset);
+          fbb.addInt64(2, object.annotation.targetId);
+          fbb.addOffset(3, fileNameOffset);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (obx.Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final fileNameParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 10, '');
+          final bytesParam = const fb.Uint8ListReader(lazy: false)
+              .vTableGetNullable(buffer, rootOffset, 6) as Uint8List?;
+          final object =
+              Document(id: idParam, fileName: fileNameParam, bytes: bytesParam);
+          object.annotation.targetId =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 8, 0);
+          object.annotation.attach(store);
           return object;
         })
   };
@@ -548,7 +698,53 @@ class Patient_ {
   static final photoUrl =
       obx.QueryStringProperty<Patient>(_entities[2].properties[6]);
 
+  /// see [Patient.annotations]
+  static final annotations =
+      obx.QueryRelationToMany<Patient, Annotation>(_entities[2].relations[0]);
+
   /// see [Patient.consultations]
   static final consultations =
       obx.QueryBacklinkToMany<Consultation, Patient>(Consultation_.patient);
+}
+
+/// [Annotation] entity fields to define ObjectBox queries.
+class Annotation_ {
+  /// See [Annotation.id].
+  static final id =
+      obx.QueryIntegerProperty<Annotation>(_entities[3].properties[0]);
+
+  /// See [Annotation.text].
+  static final text =
+      obx.QueryStringProperty<Annotation>(_entities[3].properties[1]);
+
+  /// See [Annotation.createdAt].
+  static final createdAt =
+      obx.QueryDateProperty<Annotation>(_entities[3].properties[2]);
+
+  /// See [Annotation.patient].
+  static final patient =
+      obx.QueryRelationToOne<Annotation, Patient>(_entities[3].properties[3]);
+
+  /// see [Annotation.documents]
+  static final documents =
+      obx.QueryRelationToMany<Annotation, Document>(_entities[3].relations[0]);
+}
+
+/// [Document] entity fields to define ObjectBox queries.
+class Document_ {
+  /// See [Document.id].
+  static final id =
+      obx.QueryIntegerProperty<Document>(_entities[4].properties[0]);
+
+  /// See [Document.bytes].
+  static final bytes =
+      obx.QueryByteVectorProperty<Document>(_entities[4].properties[1]);
+
+  /// See [Document.annotation].
+  static final annotation =
+      obx.QueryRelationToOne<Document, Annotation>(_entities[4].properties[2]);
+
+  /// See [Document.fileName].
+  static final fileName =
+      obx.QueryStringProperty<Document>(_entities[4].properties[3]);
 }
