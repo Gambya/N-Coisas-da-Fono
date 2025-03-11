@@ -274,7 +274,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
   Future<String?> _showDialogSelectImage(BuildContext context) async {
     return await showDialog<String?>(
         context: context,
-        builder: (context) {
+        builder: (dialogContext) {
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -287,16 +287,20 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
                   leading: Icon(Icons.camera_alt),
                   title: Text("Câmera"),
                   onTap: () async {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context, await _selectCameraImage(context));
+                    final result = await _selectCameraImage(dialogContext);
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext, result);
+                    }
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.photo),
                   title: Text("Galeria"),
                   onTap: () async {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context, await _selectGalletyImage(context));
+                    final result = await _selectGalletyImage(dialogContext);
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext, result);
+                    }
                   },
                 ),
               ],
@@ -317,7 +321,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -338,7 +342,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -353,6 +357,7 @@ class _DoctorRegisterViewState extends State<DoctorRegisterView> {
       AndroidUiSettings(
         toolbarTitle: 'Imagem',
         toolbarColor: Color.fromARGB(255, 215, 186, 232),
+        activeControlsWidgetColor: Color.fromARGB(255, 215, 186, 232),
         toolbarWidgetColor: Colors.white,
         initAspectRatio: CropAspectRatioPreset.original,
         lockAspectRatio: false,

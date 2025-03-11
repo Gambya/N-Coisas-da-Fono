@@ -121,19 +121,10 @@ class LocalConsultationStorage {
 
       List<Consultation> consultations = await queryResult.findAsync();
 
-      print(
-          'Query by date returned ${consultations.length} consultations for $date');
-      if (consultations.isEmpty) {
-        print('No consultations found for date: $date');
-      } else {
-        print('Consultations found: $consultations');
-      }
-
       queryResult.close();
 
       return Success(consultations);
     } catch (e, s) {
-      print('Error querying consultations by date: $e, StackTrace: $s');
       return Failure(LocalStorageException(e.toString(), s));
     }
   }

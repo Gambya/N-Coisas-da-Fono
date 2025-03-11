@@ -73,7 +73,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: Color.fromARGB(255, 193, 214, 255),
-                                width: 2.0,
+                                width: 3.0,
                               ),
                             ),
                             child: CircleAvatar(
@@ -95,7 +95,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Color.fromARGB(255, 193, 214, 255),
-                                  width: 2.0,
+                                  width: 3.0,
                                 ),
                               ),
                               child: CircleAvatar(
@@ -114,7 +114,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: Color.fromARGB(255, 193, 214, 255),
-                                width: 2.0,
+                                width: 3.0,
                               ),
                             ),
                             child: CircleAvatar(
@@ -131,7 +131,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: Color.fromARGB(255, 193, 214, 255),
-                                width: 2.0,
+                                width: 3.0,
                               ),
                             ),
                             child: CircleAvatar(

@@ -14,6 +14,8 @@ abstract final class AppColors {
       Color(0x4DFFFFFF); // Figma rgba(255, 255, 255, 0.3)
   static const blackTransparent = Color(0x4D000000);
   static const red1 = Color(0xFFE74C3C);
+  static const Color purplePrimary = Color.fromARGB(255, 215, 186, 232);
+  static const Color blueSecontary = Color.fromARGB(255, 193, 214, 255);
 
   static const lightColorScheme = ColorScheme(
     brightness: Brightness.light,

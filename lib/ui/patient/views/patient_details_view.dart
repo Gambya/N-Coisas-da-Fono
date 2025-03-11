@@ -4,12 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:ncoisasdafono/domain/entities/annotation.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:ncoisasdafono/domain/validators/patient_validator.dart';
+import 'package:ncoisasdafono/ui/patient/viewmodels/annotation_view_model.dart';
 import 'package:ncoisasdafono/ui/patient/viewmodels/patient_details_view_model.dart';
+import 'package:ncoisasdafono/ui/patient/views/annotation_view.dart';
+import 'package:ncoisasdafono/ui/patient/widgets/annotation_card.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 import 'package:social_sharing_plus/social_sharing_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PatientDetailsView extends StatefulWidget {
   final Patient patient;
@@ -28,10 +33,23 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     super.initState();
     _viewModel = context.read<PatientDetailsViewModel>();
     _viewModel.patient = widget.patient;
-    _viewModel.onSavePatientCommand.addListener(_onSave);
+    _viewModel.onSavePatientCommand.addListener(_onSaveChange);
+    _viewModel.onLoadAnnotationCommand.addListener(_onLoadAnnotationsChange);
+    _viewModel.onRemoveFileCommand.addListener(_onRemoveFileChange);
+    _viewModel.onLoadAnnotationCommand.execute(_viewModel.patient.id);
   }
 
-  void _onSave() {
+  void _onLoadAnnotationsChange() {
+    if (_viewModel.onLoadAnnotationCommand.isFailure) {
+      final failure =
+          _viewModel.onLoadAnnotationCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(failure.error.toString()),
+      ));
+    }
+  }
+
+  void _onSaveChange() {
     if (_viewModel.onSavePatientCommand.isFailure) {
       final failure = _viewModel.onSavePatientCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -40,9 +58,20 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     }
   }
 
+  void _onRemoveFileChange() {
+    if (_viewModel.onRemoveFileCommand.isFailure) {
+      final failure = _viewModel.onRemoveFileCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(failure.error.toString()),
+      ));
+    }
+  }
+
   @override
   void dispose() {
-    _viewModel.onSavePatientCommand.removeListener(_onSave);
+    _viewModel.onSavePatientCommand.removeListener(_onSaveChange);
+    _viewModel.onLoadAnnotationCommand.removeListener(_onLoadAnnotationsChange);
+    _viewModel.onRemoveFileCommand.removeListener(_onRemoveFileChange);
     super.dispose();
   }
 
@@ -220,7 +249,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     color: Colors.white,
                     size: 30.0,
                   ),
-                  onPressed: () => _showPhoneCallBottomSheet(context),
+                  onPressed: () =>
+                      _makePhoneCall(_viewModel.patient.phone, context),
                 ),
                 IconButton(
                   style: ButtonStyle(
@@ -233,7 +263,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     color: Colors.white,
                     size: 30.0,
                   ),
-                  onPressed: () => _showPhoneCallBottomSheet(context),
+                  onPressed: () =>
+                      _sendWhatsAppMessage(_viewModel.patient.phone, context),
                 ),
                 IconButton(
                   style: ButtonStyle(
@@ -246,7 +277,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     color: Colors.white,
                     size: 30.0,
                   ),
-                  onPressed: () => _showPhoneCallBottomSheet(context),
+                  onPressed: () =>
+                      _sendEmail(_viewModel.patient.email, context),
                 ),
               ],
             ),
@@ -348,17 +380,18 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     Icons.post_add_rounded,
                     color: Colors.white,
                   ),
-                  onPressed: () => _addAnotation(context),
+                  onPressed: () => _addAnotation(_viewModel.patient),
                 ),
               ],
             ),
+            _showAnnotations(context),
           ],
         ),
       ),
     );
   }
 
-  void _showEditBottomSheet(BuildContext context) {
+  _showEditBottomSheet(BuildContext context) {
     showModalBottomSheet(
       showDragHandle: true,
       isScrollControlled: true,
@@ -539,18 +572,36 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
   }
 
-  Widget _showPhoneCallBottomSheet(BuildContext context) {
-    return Center(child: Text('Phone call'));
-  }
+  _addAnotation(Patient patient) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => AnnotationView(
+          viewModel: context.read<AnnotationViewModel>(),
+          patient: patient,
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
 
-  Widget _addAnotation(BuildContext context) {
-    return Center(child: Text('Add anotation'));
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   Future<String?> _showDialogSelectImage(BuildContext context) async {
     return await showDialog<String?>(
         context: context,
-        builder: (context) {
+        builder: (dialogContext) {
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -563,16 +614,20 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                   leading: Icon(Icons.camera_alt),
                   title: Text("Câmera"),
                   onTap: () async {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context, await _selectCameraImage(context));
+                    final result = await _selectCameraImage(dialogContext);
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext, result);
+                    }
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.photo),
                   title: Text("Galeria"),
                   onTap: () async {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context, await _selectGalletyImage(context));
+                    final result = await _selectGalletyImage(dialogContext);
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext, result);
+                    }
                   },
                 ),
               ],
@@ -593,7 +648,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -614,7 +669,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
@@ -629,6 +684,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       AndroidUiSettings(
         toolbarTitle: 'Imagem',
         toolbarColor: Color.fromARGB(255, 215, 186, 232),
+        activeControlsWidgetColor: Color.fromARGB(255, 215, 186, 232),
         toolbarWidgetColor: Colors.white,
         initAspectRatio: CropAspectRatioPreset.original,
         lockAspectRatio: false,
@@ -636,7 +692,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     ]);
   }
 
-  void _showShareBottomSheet(BuildContext context) {
+  _showShareBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -687,9 +743,159 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
   }
 
-  void _share(SocialPlatform platform) async {
+  _share(SocialPlatform platform) async {
     final contentText =
         'Nome: ${_viewModel.patient.name}\nEmail:${_viewModel.patient.email}\nTelefone:${_viewModel.patient.phone}';
     await SocialSharingPlus.shareToSocialMedia(platform, contentText);
+  }
+
+  Widget _showAnnotations(BuildContext context) {
+    return SingleChildScrollView(
+      child: StreamBuilder<List<Annotation>>(
+          stream: _viewModel.annotations,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 193, 214, 255),
+              ));
+            } else if (snapshot.hasError) {
+              return Text('Erro: ${snapshot.error}');
+            } else if (snapshot.hasData) {
+              if (snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text('Nenhuma anotação encontrada.'),
+                );
+              }
+
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  Annotation annotation = snapshot.data![index];
+                  return AnnotationCard(
+                    text: annotation.text,
+                    files: annotation.documents.toList(),
+                    onDeleteFile: (fileIndex) async {
+                      final document = annotation.documents[fileIndex];
+                      _viewModel.onRemoveFileCommand.execute(document);
+                      setState(() {
+                        annotation.documents.removeAt(fileIndex);
+                      });
+                    },
+                    onEditPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  AnnotationView(
+                            viewModel: context.read<AnnotationViewModel>(),
+                            patient: annotation.patient.target!,
+                            annotation: annotation,
+                          ),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(0.0, 1.0);
+                            const end = Offset.zero;
+                            const curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end).chain(
+                              CurveTween(curve: curve),
+                            );
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+                itemCount: snapshot.data?.length ?? 0,
+              );
+            } else {
+              return const Center(
+                child: Text('Nenhuma anotação encontrado.'),
+              );
+            }
+          }),
+    );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber, BuildContext context) async {
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final url = 'tel:$cleanNumber';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Não foi possível iniciar a ligação.'),
+        ));
+      }
+    }
+  }
+
+  Future<void> _sendWhatsAppMessage(
+      String phoneNumber, BuildContext context) async {
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final message = Uri.encodeFull('Olá, tudo bem?');
+    final url = Uri.parse('https://wa.me/$cleanNumber?text=$message');
+
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Não foi possível abrir o WhatsApp.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao abrir o WhatsApp: $e'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendEmail(String email, BuildContext context) async {
+    final emailUrl = Uri(
+      scheme: 'mailto',
+      path: email,
+      query:
+          'subject=Consulta%20do%20Paciente&body=Olá,%20estou%20entrando%20em%20contato%20sobre%20sua%20consulta.',
+    );
+
+    try {
+      if (await canLaunchUrl(emailUrl)) {
+        await launchUrl(emailUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Não foi possível abrir o aplicativo de e-mail.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao abrir e-mail: $e'),
+          ),
+        );
+      }
+    }
   }
 }
