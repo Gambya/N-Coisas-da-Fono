@@ -14,6 +14,7 @@ import 'package:ncoisasdafono/ui/patient/widgets/annotation_card.dart';
 import 'package:provider/provider.dart';
 import 'package:result_command/result_command.dart';
 import 'package:social_sharing_plus/social_sharing_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PatientDetailsView extends StatefulWidget {
   final Patient patient;
@@ -248,7 +249,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     color: Colors.white,
                     size: 30.0,
                   ),
-                  onPressed: () => _showPhoneCallBottomSheet(context),
+                  onPressed: () =>
+                      _makePhoneCall(_viewModel.patient.phone, context),
                 ),
                 IconButton(
                   style: ButtonStyle(
@@ -261,7 +263,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     color: Colors.white,
                     size: 30.0,
                   ),
-                  onPressed: () => _showPhoneCallBottomSheet(context),
+                  onPressed: () =>
+                      _sendWhatsAppMessage(_viewModel.patient.phone, context),
                 ),
                 IconButton(
                   style: ButtonStyle(
@@ -274,7 +277,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     color: Colors.white,
                     size: 30.0,
                   ),
-                  onPressed: () => _showPhoneCallBottomSheet(context),
+                  onPressed: () =>
+                      _sendEmail(_viewModel.patient.email, context),
                 ),
               ],
             ),
@@ -568,10 +572,6 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
   }
 
-  Widget _showPhoneCallBottomSheet(BuildContext context) {
-    return Center(child: Text('Phone call'));
-  }
-
   _addAnotation(Patient patient) {
     Navigator.push(
       context,
@@ -823,5 +823,79 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
             }
           }),
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber, BuildContext context) async {
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final url = 'tel:$cleanNumber';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Não foi possível iniciar a ligação.'),
+        ));
+      }
+    }
+  }
+
+  Future<void> _sendWhatsAppMessage(
+      String phoneNumber, BuildContext context) async {
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final message = Uri.encodeFull('Olá, tudo bem?');
+    final url = Uri.parse('https://wa.me/$cleanNumber?text=$message');
+
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Não foi possível abrir o WhatsApp.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao abrir o WhatsApp: $e'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendEmail(String email, BuildContext context) async {
+    final emailUrl = Uri(
+      scheme: 'mailto',
+      path: email,
+      query:
+          'subject=Consulta%20do%20Paciente&body=Olá,%20estou%20entrando%20em%20contato%20sobre%20sua%20consulta.',
+    );
+
+    try {
+      if (await canLaunchUrl(emailUrl)) {
+        await launchUrl(emailUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Não foi possível abrir o aplicativo de e-mail.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao abrir e-mail: $e'),
+          ),
+        );
+      }
+    }
   }
 }
