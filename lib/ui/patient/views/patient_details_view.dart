@@ -32,12 +32,13 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     super.initState();
     _viewModel = context.read<PatientDetailsViewModel>();
     _viewModel.patient = widget.patient;
-    _viewModel.onSavePatientCommand.addListener(_onSave);
-    _viewModel.onLoadAnnotationCommand.addListener(_onLoadAnnotations);
+    _viewModel.onSavePatientCommand.addListener(_onSaveChange);
+    _viewModel.onLoadAnnotationCommand.addListener(_onLoadAnnotationsChange);
+    _viewModel.onRemoveFileCommand.addListener(_onRemoveFileChange);
     _viewModel.onLoadAnnotationCommand.execute(_viewModel.patient.id);
   }
 
-  void _onLoadAnnotations() {
+  void _onLoadAnnotationsChange() {
     if (_viewModel.onLoadAnnotationCommand.isFailure) {
       final failure =
           _viewModel.onLoadAnnotationCommand.value as FailureCommand;
@@ -47,7 +48,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     }
   }
 
-  void _onSave() {
+  void _onSaveChange() {
     if (_viewModel.onSavePatientCommand.isFailure) {
       final failure = _viewModel.onSavePatientCommand.value as FailureCommand;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -56,10 +57,20 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     }
   }
 
+  void _onRemoveFileChange() {
+    if (_viewModel.onRemoveFileCommand.isFailure) {
+      final failure = _viewModel.onRemoveFileCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(failure.error.toString()),
+      ));
+    }
+  }
+
   @override
   void dispose() {
-    _viewModel.onSavePatientCommand.removeListener(_onSave);
-    _viewModel.onLoadAnnotationCommand.removeListener(_onLoadAnnotations);
+    _viewModel.onSavePatientCommand.removeListener(_onSaveChange);
+    _viewModel.onLoadAnnotationCommand.removeListener(_onLoadAnnotationsChange);
+    _viewModel.onRemoveFileCommand.removeListener(_onRemoveFileChange);
     super.dispose();
   }
 
@@ -765,7 +776,13 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                   return AnnotationCard(
                     text: annotation.text,
                     files: annotation.documents.toList(),
-                    onDeleteFile: (index) {},
+                    onDeleteFile: (int fileIndex) async {
+                      final document = annotation.documents[fileIndex];
+                      _viewModel.onRemoveFileCommand.execute(document);
+                      setState(() {
+                        annotation.documents.removeAt(fileIndex);
+                      });
+                    },
                     onEditPressed: () {
                       Navigator.push(
                         context,

@@ -1,6 +1,7 @@
 import 'package:ncoisasdafono/domain/entities/annotation.dart';
 import 'package:ncoisasdafono/domain/entities/consultation.dart';
 import 'package:ncoisasdafono/domain/entities/doctor.dart';
+import 'package:ncoisasdafono/domain/entities/document.dart';
 import 'package:ncoisasdafono/domain/entities/patient.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -12,6 +13,7 @@ class ObjectBoxDatabase {
   static late final Box<Doctor> _doctorBox;
   static late final Box<Patient> _patientBox;
   static late final Box<Annotation> _annotationBox;
+  static late final Box<Document> _documentBox;
 
   static Future<void> init() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -22,6 +24,7 @@ class ObjectBoxDatabase {
     _doctorBox = _store.box<Doctor>();
     _patientBox = _store.box<Patient>();
     _annotationBox = _store.box<Annotation>();
+    _documentBox = _store.box<Document>();
   }
 
   static void close() {
@@ -35,6 +38,8 @@ class ObjectBoxDatabase {
   static Box<Patient> get patientBox => _patientBox;
 
   static Box<Annotation> get annotationBox => _annotationBox;
+
+  static Box<Document> get documentBox => _documentBox;
 
   static Store get store => _store;
 }
