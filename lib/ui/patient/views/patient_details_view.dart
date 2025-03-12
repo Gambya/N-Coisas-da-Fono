@@ -842,7 +842,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
   Future<void> _sendWhatsAppMessage(
       String phoneNumber, BuildContext context) async {
     // Validação do número
-    if (phoneNumber == null || phoneNumber.isEmpty) {
+    if (phoneNumber.isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Número de telefone inválido.')),
