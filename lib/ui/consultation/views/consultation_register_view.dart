@@ -47,7 +47,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
 
   void _onRegisterConsultationCommandChanged() {
     if (_viewModel.registerConsultationCommand.isSuccess) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     } else if (_viewModel.registerConsultationCommand.isFailure) {
       final failure =
           _viewModel.registerConsultationCommand.value as FailureCommand;
@@ -99,6 +99,7 @@ class _ConsultationRegisterViewState extends State<ConsultationRegisterView> {
               } else if (snapshot.hasData) {
                 return Column(
                   children: [
+                    const SizedBox(height: 10),
                     TextFormField(
                       onChanged: (value) {
                         _consultation.title = value;

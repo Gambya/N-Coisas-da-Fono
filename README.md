@@ -13,30 +13,45 @@ O aplicativo é open-source e foi desenvolvido com Flutter, garantindo compatibi
 
 ## Screenshots
 
-Adicione aqui capturas de tela do aplicativo para demonstrar suas funcionalidades. Use o seguinte formato para incluir imagens:
 
 
-
-Por favor, substitua os caminhos das imagens (ex.: `screenshots/home_screen.png`) pelos arquivos reais que você capturar do app. Certifique-se de colocá-los na pasta `screenshots/` no repositório e atualize os nomes conforme necessário.
+<table>
+  <tr>
+    <td align="center">
+      <img src="assets/screenshots/2.jpg" alt="Tela Consultas" width="300"/>
+      <br>Tela Consultas
+    </td>
+    <td align="center">
+      <img src="assets/screenshots/1.jpg" alt="Listagem de Pacientes" width="300"/>
+      <br>Listagem de Pacientes
+    </td>
+    <td align="center">
+      <img src="assets/screenshots/3.jpg" alt="Registro de Consulta" width="300"/>
+      <br>Perfil do Paciente
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="assets/screenshots/4.jpg" alt="Edição de Paciente" width="300"/>
+      <br>Edição de Paciente
+    </td>
+    <td align="center">
+      <img src="assets/screenshots/5.jpg" alt="Anotações sobre pacientes" width="300"/>
+      <br>Anotações Paciente
+    </td>
+    <td align="center">
+      <img src="assets/screenshots/6.jpg" alt="Perfil do Paciente" width="300"/>
+      <br>Perfil do Paciente
+    </td>
+  </tr>
+</table>
 
 ## Instalação
 
-### Via F-Droid
+### Via Release
 
-O NCoisas da Fono ainda não está disponível na F-Droid, mas você pode acompanhar o progresso para sua inclusão. Para instalar via F-Droid quando estiver disponível:
-
-1. **Baixe o F-Droid**:
-   - Acesse [f-droid.org](https://f-droid.org/) e instale o aplicativo F-Droid em seu dispositivo Android.
-
-2. **Adicione o Repositório (se necessário)**:
-   - Abra o F-Droid e vá para **Configurações > Repositórios**.
-   - Adicione o repositório oficial do NCoisas da Fono (será fornecido quando publicado).
-
-3. **Procure e Instale**:
-   - Na barra de busca, digite "NCoisas da Fono".
-   - Toque no app e selecione **Instalar**.
-
-**[Nota]: Atualize esta seção com o link e instruções específicas quando o app for publicado na F-Droid.**
+1. **Baixe o NCoisas da Fono Release**:
+   - Acesse [Releases](https://github.com/Gambya/N-Coisas-da-Fono/releases/) e instale o aplicativo aceitando as solicitações de segurança do dispositivo Android.
 
 ### Via Repositório e Flutter
 
@@ -83,5 +98,5 @@ Para executar o aplicativo localmente a partir do código-fonte usando Flutter, 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests para sugerir melhorias, corrigir bugs ou adicionar novas funcionalidades.
 
 ### Licença
-Este projeto está sob a [MIT License](https://grok.com/chat/LICENSE). Veja o arquivo `LICENSE` para mais detalhes.
+Este projeto está sob a [MIT License](LICENSE). Veja o arquivo `LICENSE` para mais detalhes.
 

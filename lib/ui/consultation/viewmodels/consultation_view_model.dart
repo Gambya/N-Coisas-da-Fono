@@ -29,6 +29,7 @@ class ConsultationViewModel extends ChangeNotifier {
     }
 
     _consultationRepository.searchConsultation(query, date);
+    notifyListeners();
     return consultationStream;
   }
 

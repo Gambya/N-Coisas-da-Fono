@@ -841,40 +841,69 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
 
   Future<void> _sendWhatsAppMessage(
       String phoneNumber, BuildContext context) async {
+    // Validação do número
+    if (phoneNumber == null || phoneNumber.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Número de telefone inválido.')),
+        );
+      }
+      return;
+    }
+
+    // Limpar o número
     final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-    final message = Uri.encodeFull('Olá, tudo bem?');
-    final url = Uri.parse('https://wa.me/$cleanNumber?text=$message');
+    final formattedNumber = cleanNumber.startsWith('+')
+        ? cleanNumber
+        : '+55$cleanNumber'; // Adiciona o código do país (ajuste para sua região)
+    final message = Uri.encodeComponent(
+        'Olá, tudo bem? Estou entrando em contato sobre sua consulta.');
+    final whatsappUrl =
+        Uri.parse('https://wa.me/$formattedNumber?text=$message');
+
+    debugPrint('Tentando abrir WhatsApp: $whatsappUrl');
 
     try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
+      final canLaunch = await canLaunchUrl(whatsappUrl);
+      debugPrint('canLaunchUrl retornou: $canLaunch');
+      if (canLaunch) {
+        await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Não foi possível abrir o WhatsApp.'),
-            ),
+            const SnackBar(content: Text('Não foi possível abrir o WhatsApp.')),
           );
         }
       }
     } catch (e) {
+      debugPrint('Erro ao abrir WhatsApp: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao abrir o WhatsApp: $e'),
-          ),
+          SnackBar(content: Text('Erro ao abrir WhatsApp: $e')),
         );
       }
     }
   }
 
   Future<void> _sendEmail(String email, BuildContext context) async {
+    // Validação básica do e-mail
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('E-mail inválido.'),
+        ),
+      );
+      return;
+    }
+
     final emailUrl = Uri(
       scheme: 'mailto',
-      path: email,
+      path: Uri.encodeComponent(email),
       query:
-          'subject=Consulta%20do%20Paciente&body=Olá,%20estou%20entrando%20em%20contato%20sobre%20sua%20consulta.',
+          'subject=${Uri.encodeComponent('Consulta do Paciente')}&body=${Uri.encodeComponent('Olá, estou entrando em contato sobre sua consulta.')}',
     );
+
+    debugPrint('Tentando abrir: $emailUrl'); // Para depuração
 
     try {
       if (await canLaunchUrl(emailUrl)) {

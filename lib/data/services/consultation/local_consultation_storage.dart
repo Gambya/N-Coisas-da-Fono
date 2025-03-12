@@ -34,11 +34,11 @@ class LocalConsultationStorage {
   AsyncResult<List<Consultation>> getAllData() async {
     try {
       final box = await _getBox();
-      final allData = box
+      final allData = await box
           .query()
           .order(Consultation_.dateTime) //
           .build()
-          .find();
+          .findAsync();
       return Success(allData as List<Consultation>);
     } catch (e, s) {
       return Failure(LocalStorageException(e.toString(), s));

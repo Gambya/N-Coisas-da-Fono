@@ -28,8 +28,11 @@ class ConsultationRegisterViewModel extends ChangeNotifier {
   late final registerConsultationCommand = Command1(_registerConsultation);
 
   AsyncResult<Consultation> _registerConsultation(
-      ConsultationDto consultation) {
-    return _consultationRepository.createConsultation(consultation.toEntity());
+      ConsultationDto consultation) async {
+    final result = await _consultationRepository
+        .createConsultation(consultation.toEntity());
+    notifyListeners();
+    return result;
   }
 
   void loadPatients() async {
