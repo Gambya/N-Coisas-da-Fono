@@ -93,7 +93,7 @@ class ShimmerLoadingConsultationRegister extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withAlpha((255 * 0.2) as int),
+            color: Colors.grey.withValues(alpha: .8),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),

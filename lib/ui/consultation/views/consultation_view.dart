@@ -162,7 +162,11 @@ class _ConsultationViewState extends State<ConsultationView> {
                 );
               },
             ),
-          );
+          ).then((value) {
+            if (value) {
+              _viewModel.loadConsultationCommand.execute(_currentDate);
+            }
+          });
         },
         child: const Icon(Icons.post_add),
       ),

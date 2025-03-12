@@ -12,8 +12,9 @@ class LocalConsultationRepository implements ConsultationRepository {
   LocalConsultationRepository(this._storage);
 
   @override
-  AsyncResult<Consultation> createConsultation(Consultation consultation) {
-    return _storage
+  AsyncResult<Consultation> createConsultation(
+      Consultation consultation) async {
+    return await _storage
         .saveData(consultation) //
         .onSuccess((consultation) async {
       await getConsultations().onSuccess((consultations) {
@@ -23,8 +24,8 @@ class LocalConsultationRepository implements ConsultationRepository {
   }
 
   @override
-  AsyncResult<Unit> deleteConsultation(int id) {
-    return _storage
+  AsyncResult<Unit> deleteConsultation(int id) async {
+    return await _storage
         .deleteData(id) //
         .onSuccess((_) async {
       final result = await getConsultations();
@@ -33,27 +34,28 @@ class LocalConsultationRepository implements ConsultationRepository {
   }
 
   @override
-  AsyncResult<Consultation> getConsultation(int id) {
-    return _storage.getData(id);
+  AsyncResult<Consultation> getConsultation(int id) async {
+    return await _storage.getData(id);
   }
 
   @override
-  AsyncResult<List<Consultation>> getConsultations() {
-    return _storage
+  AsyncResult<List<Consultation>> getConsultations() async {
+    return await _storage
         .getAllData() //
         .onSuccess((consultations) => _streamController.add(consultations));
   }
 
   @override
-  AsyncResult<List<Consultation>> getConsultationsByDate(DateTime date) {
-    return _storage
+  AsyncResult<List<Consultation>> getConsultationsByDate(DateTime date) async {
+    return await _storage
         .queryByDate(date) //
         .onSuccess((consultations) => _streamController.add(consultations));
   }
 
   @override
-  AsyncResult<Consultation> updateConsultation(Consultation consultation) {
-    return _storage
+  AsyncResult<Consultation> updateConsultation(
+      Consultation consultation) async {
+    return await _storage
         .saveData(consultation) //
         .onSuccess((_) async {
       final result = await getConsultations();
@@ -63,8 +65,8 @@ class LocalConsultationRepository implements ConsultationRepository {
 
   @override
   AsyncResult<List<Consultation>> searchConsultation(
-      String query, DateTime date) {
-    return _storage
+      String query, DateTime date) async {
+    return await _storage
         .query(query, date) //
         .onSuccess((consultations) => _streamController.add(consultations))
         .onFailure((e) => LocalStorageException("error on search query"));
